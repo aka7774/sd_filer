@@ -15,37 +15,45 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 
 - gradioでUIを作りこむのは非常に困難だとわかったのでUIはこれ以上凝らない
 
-# Backup Directory
+# 共通
+
+## Backup Directory
 
 - 保存先のディレクトリをフルパスで入力してください
 - 近い将来ここは親ディレクトリを指定する仕様に変更する
   - タブごとにサブフォルダ作って保存する予定
 
-# Extension内のjsonフォルダ
+## Extension内のjsonフォルダ
 
 - Backup Directoryの場所が保存されます
 - genre/commentが保存されます
 
-# 共通
+## Activeタブ
 
-## Reload
+- 1111が認識しているファイルが表示されます
+
+## Backupタブ
+
+- Backup Directory内のファイルが表示されます
+
+## Reloadボタン
 
 - 最初にReloadを押さないと動きません
 - 最初から読み込むと1111の起動に時間がかかるのでどうしたものか
   - タブ押したときに読み込むのは難しそう
 
-## Save (genre) comment
+## Save (genre) commentボタン
 
 - 自動保存に出来るけど破損の可能性もありうるのでボタンにした
 - Active / Backup を問わず、ファイル名に対してコメントがつきます
   - 移動してもコメントは有効
 
-## Copy / Move
+## Copy / Moveボタン
 
 - shutil の copy() と move()
 - 進捗表示出せるかは未調査だけど期待してない
 
-## Delete
+## Deleteボタン
 
 - os.remove()
 
@@ -53,32 +61,32 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 
 - 拡張子ckptとsafetensorに対応
 
-## Make InvokeAI models.yaml
+## Make InvokeAI models.yamlボタン
 
 - https://github.com/aka7774/sd_invokeai_models_yaml_maker
 - InvokeAI/configs/models.yaml の中身を生成する
 - 選択したモデルだけ出力できる
 - Backupにあるものも指定できる
 
-## Calc SHA256
+## Calc SHA256ボタン
 
 - ファイルのSHA256フルハッシュを計算する
 - ファイル名.sha256 ファイルに保存する(二重拡張子になる)
 - 頭8桁だけを一覧に表示するが滅多に重複しないはず(するようなら桁を増やす)
 
-## vae.pt
+## vae.pt列
 
 - 同名の.vae.ptファイルが存在すれば Y を表示
 
-## yaml
+## yaml列
 
 - 同名の.yamlファイルが存在すれば Y を表示
 
-## Genre
+## Genre列
 
 - モデルがどういう風に作られたかのメモ(任意)
 
-## Comment
+## Comment列
 
 - メモ(任意)
 
