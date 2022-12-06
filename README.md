@@ -21,6 +21,11 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 - 近い将来ここは親ディレクトリを指定する仕様に変更する
   - タブごとにサブフォルダ作って保存する予定
 
+# Extension内のjsonフォルダ
+
+- Backup Directoryの場所が保存されます
+- genre/commentが保存されます
+
 # 共通
 
 ## Reload
