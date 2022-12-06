@@ -32,6 +32,8 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 ## Save (genre) comment
 
 - 自動保存に出来るけど破損の可能性もありうるのでボタンにした
+- Active / Backup を問わず、ファイル名に対してコメントがつきます
+  - 移動してもコメントは有効
 
 ## Copy / Move
 
