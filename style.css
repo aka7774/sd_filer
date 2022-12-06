@@ -1,0 +1,21 @@
+#tab_filer table{
+    border-collapse: collapse;
+    width: 100%
+}
+
+#tab_filer table td, #tab_filer table th{
+    border: 1px solid #ccc;
+    padding: 0.25em 0.5em;
+}
+
+#tab_filer table input[type="text"]{
+    width:100%;
+}
+
+#tab_filer button{
+    max-width: 16em;
+}
+
+#tab_filer input[disabled="disabled"]{
+    opacity: 0.5;
+}
