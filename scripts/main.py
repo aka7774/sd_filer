@@ -1,64 +1,121 @@
 import os
 import pathlib
+import pprint
 
 import gradio as gr
 
 from modules import script_callbacks, sd_models, shared
 import filer.models as filer_models
 import filer.actions as filer_actions
+import filer.checkpoints as filer_checkpoints
+import filer.hypernetworks as filer_hypernetworks
 
 def js_only():
     pass
 
+# copy begin
 def copy_checkpoints_active(filenames):
-    filer_actions.copy_checkpoints(filenames, filer_models.list_checkpoints_active(), 'active')
+    filer_actions.copy(filenames, filer_checkpoints.list_active(), 'active')
     return table_checkpoints_active()
 
 def copy_checkpoints_backup(filenames):
-    filer_actions.copy_checkpoints(filenames, filer_models.list_checkpoints_backup(), 'backup')
+    filer_actions.copy(filenames, filer_checkpoints.list_backup(), 'backup')
     return table_checkpoints_backup()
 
 def move_checkpoints_active(filenames):
-    filer_actions.move_checkpoints(filenames, filer_models.list_checkpoints_active(), 'active')
+    filer_actions.move(filenames, filer_checkpoints.list_active(), 'active')
     return table_checkpoints_active()
 
 def move_checkpoints_backup(filenames):
-    filer_actions.move_checkpoints(filenames, filer_models.list_checkpoints_backup(), 'backup')
+    filer_actions.move(filenames, filer_checkpoints.list_backup(), 'backup')
     return table_checkpoints_backup()
 
 def delete_checkpoints_active(filenames):
-    filer_actions.delete_checkpoints(filenames, filer_models.list_checkpoints_active())
+    filer_actions.delete(filenames, filer_checkpoints.list_active())
     return table_checkpoints_active()
 
 def delete_checkpoints_backup(filenames):
-    filer_actions.delete_checkpoints(filenames, filer_models.list_checkpoints_backup())
+    filer_actions.delete(filenames, filer_checkpoints.list_backup())
     return table_checkpoints_backup()
 
-def make_checkpoints_active(filenames):
-    html = '<pre>' + filer_actions.make_yaml(filenames, filer_models.list_checkpoints_active()) + '</pre>'
-    return html
-
-def make_checkpoints_backup(filenames):
-    html = '<pre>' + filer_actions.make_yaml(filenames, filer_models.list_checkpoints_backup()) + '</pre>'
-    return html
-
 def calc_checkpoints_active(filenames):
-    filer_actions.calc_sha256(filenames, filer_models.list_checkpoints_active())
+    filer_actions.calc_sha256(filenames, filer_checkpoints.list_active())
     return table_checkpoints_active()
 
 def calc_checkpoints_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_models.list_checkpoints_backup())
+    filer_actions.calc_sha256(filenames, filer_checkpoints.list_backup())
     return table_checkpoints_backup()
 
 def save_checkpoints(data):
-    filer_actions.save_checkpoints(data)
+    filer_models.save_comment('checkpoints', data)
     return 'saved.'
 
 def table_checkpoints_active():
-    return table_checkpoints('checkpoints_active', filer_models.list_checkpoints_active())
+    return table_checkpoints('checkpoints_active', filer_checkpoints.list_active())
 
 def table_checkpoints_backup():
-    return table_checkpoints('checkpoints_backup', filer_models.list_checkpoints_backup())
+    return table_checkpoints('checkpoints_backup', filer_checkpoints.list_backup())
+# copy end
+
+# paste
+def copy_hypernetworks_active(filenames):
+    filer_actions.copy(filenames, filer_hypernetworks.list_active(), 'active')
+    return table_hypernetworks_active()
+
+def copy_hypernetworks_backup(filenames):
+    filer_actions.copy(filenames, filer_hypernetworks.list_backup(), 'backup')
+    return table_hypernetworks_backup()
+
+def move_hypernetworks_active(filenames):
+    filer_actions.move(filenames, filer_hypernetworks.list_active(), 'active')
+    return table_hypernetworks_active()
+
+def move_hypernetworks_backup(filenames):
+    filer_actions.move(filenames, filer_hypernetworks.list_backup(), 'backup')
+    return table_hypernetworks_backup()
+
+def delete_hypernetworks_active(filenames):
+    filer_actions.delete(filenames, filer_hypernetworks.list_active())
+    return table_hypernetworks_active()
+
+def delete_hypernetworks_backup(filenames):
+    filer_actions.delete(filenames, filer_hypernetworks.list_backup())
+    return table_hypernetworks_backup()
+
+def calc_hypernetworks_active(filenames):
+    filer_actions.calc_sha256(filenames, filer_hypernetworks.list_active())
+    return table_hypernetworks_active()
+
+def calc_hypernetworks_backup(filenames):
+    filer_actions.calc_sha256(filenames, filer_hypernetworks.list_backup())
+    return table_hypernetworks_backup()
+
+def save_hypernetworks(data):
+    filer_models.save_comment('hypernetworks', data)
+    return 'saved.'
+
+def table_hypernetworks_active():
+    return table_hypernetworks('hypernetworks_active', filer_hypernetworks.list_active())
+
+def table_hypernetworks_backup():
+    return table_hypernetworks('hypernetworks_backup', filer_hypernetworks.list_backup())
+# paste end
+
+def state_hypernetworks_active(title):
+    html = title + '<br><pre>' + pprint.pformat(filer_hypernetworks.state('active', title)) + '</pre>'
+    return html
+
+def state_hypernetworks_backup(title):
+    html = title + '<br><pre>' + pprint.pformat(filer_hypernetworks.state('backup', title)) + '</pre>'
+    return html
+
+def make_checkpoints_active(filenames):
+    html = '<pre>' + filer_checkpoints.make_yaml(filenames, filer_checkpoints.list_active()) + '</pre>'
+    return html
+
+def make_checkpoints_backup(filenames):
+    html = '<pre>' + filer_checkpoints.make_yaml(filenames, filer_checkpoints.list_backup()) + '</pre>'
+    return html
 
 def save_backup_dir(backup_dir):
     filer_models.save_backup_dir(backup_dir)
@@ -73,13 +130,13 @@ def ui_set(tab1, tab2):
         elms[tab1][tab2] = {}
 
     with gr.Row():
-        if tab1 != 'Checkpoints':
+        if tab1 not in ['Checkpoints', 'Hypernetworks']:
             gr.HTML('Coming soon...')
             return
         elms[tab1][tab2]['reload'] = gr.Button("Reload")
         elms[tab1][tab2]['select_all'] = gr.Button("Select All")
         elms[tab1][tab2]['deselect_all'] = gr.Button("Deselect All")
-        elms[tab1][tab2]['save'] = gr.Button("Save genre/comment")
+        elms[tab1][tab2]['save'] = gr.Button("Save comments")
     with gr.Row():
         elms[tab1][tab2]['selected'] = gr.Textbox(
             elem_id=f"filer_{tab1.lower()}_{tab2.lower()}_selected",
@@ -100,7 +157,7 @@ def ui_set(tab1, tab2):
 
     elms[tab1][tab2]['save'].click(
         fn=globals()[f"save_{tab1.lower()}"],
-        _js=f"save_{tab1.lower()}",
+        _js=f"save_{tab1.lower()}_{tab2.lower()}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[out_html],
     )
@@ -133,6 +190,15 @@ def ui_set(tab1, tab2):
             _js=f"rows_{tab1.lower()}_{tab2.lower()}",
             inputs=[elms[tab1][tab2]['selected']],
             outputs=[elms[tab1][tab2]['table']],
+        )
+
+    if tab1 == 'Hypernetworks':
+        elms[tab1][tab2]['title'] = gr.Text(elem_id=f"{tab1.lower()}_{tab2.lower()}_title", visible=False).style(container=False)
+        elms[tab1][tab2]['state'] = gr.Button(elem_id=f"state_{tab1.lower()}_{tab2.lower()}_button", visible=False).style(container=False)
+        elms[tab1][tab2]['state'].click(
+            fn=globals()[f"state_{tab1.lower()}_{tab2.lower()}"],
+            inputs=[elms[tab1][tab2]['title']],
+            outputs=[out_html],
         )
 
     elms[tab1][tab2]['copy'].click(
@@ -246,6 +312,43 @@ def table_checkpoints(name, rs):
                 <td class="filer_vae">{r['vae']}</td>
                 <td class="filer_yaml">{r['yaml']}</td>
                 <td><select class="filer_genre">{op_html}</select></td>
+                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+            </tr>
+            """
+
+    code += """
+        </tbody>
+    </table>
+    """
+
+    return code
+
+def table_hypernetworks(name, rs):
+    code = f"""
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Filename</th>
+                <th>state</th>
+                <th>hash</th>
+                <th>sha256</th>
+                <th>Model</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+
+    for r in rs:
+        code += f"""
+            <tr class="filer_{name}_row" data-title="{r['title']}">
+                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                <td class="filer_filename">{r['filename']}</td>
+                <td class="filer_state"><input onclick="state_{name}(this, '{r['title']}')" type="button" value="state" class="gr-button gr-button-lg gr-button-secondary"></td>
+                <td class="filer_hash">{r['hash']}</td>
+                <td class="filer_sha256">{r['sha256']}</td>
+                <td><input class="filer_model" type="text" value="{r['model']}"></td>
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """

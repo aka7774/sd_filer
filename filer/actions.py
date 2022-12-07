@@ -1,11 +1,8 @@
 import os
 import shutil
 import pathlib
-import json
-import yaml
 import hashlib
 
-from modules.sd_models import checkpoints_list
 from . import models as filer_models
 
 def calc_hash(algo, filepath):
@@ -30,39 +27,6 @@ def calc_hash(algo, filepath):
     # ハッシュオブジェクトを16進数で出力します
     return h.hexdigest()
 
-def make_yaml(filenames, list):
-    y = {}
-    for r in list:
-        if r['filename'] not in filenames.split(','):
-            continue
-
-        y[r['filename']] = {
-            'description': r['title'],
-            'weights': r['filepath'],
-            'config': 'configs/stable-diffusion/v1-inference.yaml',
-            'width': 512,
-            'height': 512,
-        }
-        # 1111のデフォルトのconfig値は使わない
-        if os.path.exists(r['yaml_path']):
-            y[r['filename']]['config'] = r['yaml_path']
-        if os.path.exists(r['vae_path']):
-            y[r['filename']]['vae'] = r['vae_path']
-
-    return yaml.dump(y)
-
-def save_checkpoints(input):
-    p = pathlib.Path(__file__).parts[-4:-2]
-    filepath = os.path.join(p[0], p[1], 'json', 'checkpoints.json')
-    data = {}
-    if os.path.exists(filepath):
-        with open(filepath) as f:
-            data = json.load(f)
-    data.update(json.loads(input))
-    with open(filepath, "w") as f:
-        json.dump(data, f)
-    print("Done!")
-
 def calc_sha256(filenames, list):
     for r in list:
         if r['filename'] not in filenames.split(','):
@@ -73,7 +37,7 @@ def calc_sha256(filenames, list):
         print(f"{r['filepath']} sha256: {r['sha256']}")
     print("Done!")
 
-def copy_checkpoints(filenames, list, src):
+def copy(filenames, list, src):
     dst_dir = filer_models.get_dst_dir(src)
     if not dst_dir:
         raise ValueError('Please Input Backup Directory')
@@ -93,7 +57,7 @@ def copy_checkpoints(filenames, list, src):
         shutil.copy(r['filepath'], dst_path)
     print("Done!")
 
-def move_checkpoints(filenames, list, src):
+def move(filenames, list, src):
     dst_dir = filer_models.get_dst_dir(src)
     if not dst_dir:
         raise ValueError('Please Input Backup Directory')
@@ -113,7 +77,7 @@ def move_checkpoints(filenames, list, src):
         shutil.move(r['filepath'], dst_path)
     print("Done!")
 
-def delete_checkpoints(filenames, list):
+def delete(filenames, list):
     for r in list:
         if r['filename'] not in filenames.split(','):
             continue
