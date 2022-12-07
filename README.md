@@ -43,8 +43,9 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 - 最初から読み込むと1111の起動に時間がかかるのでどうしたものか
   - タブ押したときに読み込むのは難しそう
 
-## Save (genre) commentボタン
+## Save commentsボタン
 
+- comment, genre, modelなど記入した内容を保存する
 - 自動保存に出来るけど破損の可能性もありうるのでボタンにした
 - Active / Backup を問わず、ファイル名に対してコメントがつきます
   - 移動してもコメントは有効
@@ -102,3 +103,24 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 - Copy/Move/Deleteに.vae.ptと.yamlを追随させる機能を検討したい気持ちはある
   - チェックボックスでオンオフとか
   - でもvaeは数が少ないしyamlは容量が小さいのでほっといてもいいかなー
+
+# Hypernetworks
+
+## state列
+
+- state_dictにファイルの詳細情報が格納されているのでそれを表示する
+- torch.load()しないといけなくて複数ファイルだと結構時間がかかる
+- エラーが出るファイルがあるけど原因は深追いしていない
+
+## model列
+
+- どのモデル用のファイルとして作ったかのメモを想定
+
+## 解説
+
+- ファイルのStepsを保存する統一仕様は存在していなさそう
+- ファイル名につけている事もある(state_dictのnameは一緒)
+- ファイル名が一緒でstate_dictに入っているnameを変えてる事もある
+- state_dictにnameが入っていないケースも想定されている
+- 元のモデル情報が入っていることもあるらしいが見つかっていない
+- 学習ファイルについては、当面は自己管理を徹底するしか無さそう
