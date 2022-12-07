@@ -75,6 +75,10 @@ def calc_sha256(filenames, list):
 
 def copy_checkpoints(filenames, list, src):
     dst_dir = filer_models.get_dst_dir(src)
+    if not dst_dir:
+        raise ValueError('Please Input Backup Directory')
+        return
+
     for r in list:
         if r['filename'] not in filenames.split(','):
             continue
@@ -91,6 +95,10 @@ def copy_checkpoints(filenames, list, src):
 
 def move_checkpoints(filenames, list, src):
     dst_dir = filer_models.get_dst_dir(src)
+    if not dst_dir:
+        raise ValueError('Please Input Backup Directory')
+        return
+    
     for r in list:
         if r['filename'] not in filenames.split(','):
             continue
