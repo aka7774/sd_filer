@@ -9,6 +9,7 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 # At your own risk
 
 - Deleteボタンを押すと選択したファイルが消えます
+- 複数のブラウザタブ等を開いて異なる設定で動作させることはできません
 - その他何があっても作者は責任を負いません
 
 ## UI機能は打ち止め
