@@ -50,6 +50,15 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 - Active / Backup を問わず、ファイル名に対してコメントがつきます
   - 移動してもコメントは有効
 
+## Downloadボタン
+
+- 選択したファイルをダウンロードできる一覧を画面下部に表示します
+- ファイルの場合
+  - このボタンを押した時点でtmpにファイルがコピーされます
+- ディレクトリの場合
+  - このボタンを押した時点でtmpにzipが作成されます
+- 画面下部のdownloadリンクを押すとダウンロード開始
+
 ## Copy / Moveボタン
 
 - Copy
