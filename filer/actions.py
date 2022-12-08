@@ -93,3 +93,16 @@ def delete(filenames, list):
         else:
             os.remove(r['filepath'])
     print("Done!")
+
+def download(filenames, list):
+    files = []
+    for r in list:
+        if r['filename'] not in filenames.split(','):
+            continue
+
+        if os.path.isdir(r['filepath']):
+            zip_path = shutil.make_archive(r['filename'], 'zip', root_dir=r['filepath'])
+            files.append(zip_path)
+        else:
+            files.append(r['filepath']) 
+    return files

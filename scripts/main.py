@@ -52,6 +52,16 @@ def save_checkpoints(data):
     filer_models.save_comment('checkpoints', data)
     return 'saved.'
 
+def download_checkpoints_active(filenames):
+    return filer_actions.download(filenames, filer_checkpoints.list_active())
+
+def download_checkpoints_backup(filenames):
+    return filer_actions.download(filenames, filer_checkpoints.list_backup())
+
+def calc_checkpoints_backup(filenames):
+    filer_actions.calc_sha256(filenames, filer_checkpoints.list_backup())
+    return table_checkpoints_backup()
+
 def table_checkpoints_active():
     return table_checkpoints('checkpoints_active', filer_checkpoints.list_active())
 
@@ -83,6 +93,12 @@ def delete_hypernetworks_active(filenames):
 def delete_hypernetworks_backup(filenames):
     filer_actions.delete(filenames, filer_hypernetworks.list_backup())
     return table_hypernetworks_backup()
+
+def download_hypernetworks_active(filenames):
+    return filer_actions.download(filenames, filer_hypernetworks.list_active())
+
+def download_hypernetworks_backup(filenames):
+    return filer_actions.download(filenames, filer_hypernetworks.list_backup())
 
 def calc_hypernetworks_active(filenames):
     filer_actions.calc_sha256(filenames, filer_hypernetworks.list_active())
@@ -126,6 +142,12 @@ def delete_extensions_backup(filenames):
     filer_actions.delete(filenames, filer_extensions.list_backup())
     return table_extensions_backup()
 
+def download_extensions_active(filenames):
+    return filer_actions.download(filenames, filer_extensions.list_active())
+
+def download_extensions_backup(filenames):
+    return filer_actions.download(filenames, filer_extensions.list_backup())
+
 def calc_extensions_active(filenames):
     filer_actions.calc_sha256(filenames, filer_extensions.list_active())
     return table_extensions_active()
@@ -167,6 +189,12 @@ def delete_images_active(filenames):
 def delete_images_backup(filenames):
     filer_actions.delete(filenames, filer_images.list_backup())
     return table_images_backup()
+
+def download_images_active(filenames):
+    return filer_actions.download(filenames, filer_images.list_active())
+
+def download_images_backup(filenames):
+    return filer_actions.download(filenames, filer_images.list_backup())
 
 def calc_images_active(filenames):
     filer_actions.calc_sha256(filenames, filer_images.list_active())
@@ -235,14 +263,24 @@ def ui_set(tab1, tab2):
         elms[tab1][tab2]['copy'] = gr.Button("Copy")
         elms[tab1][tab2]['move'] = gr.Button("Move")
         elms[tab1][tab2]['delete'] = gr.Button("Delete")
+        elms[tab1][tab2]['download'] = gr.Button("Download")
     with gr.Row():
         elms[tab1][tab2]['table'] = gr.HTML()
+    with gr.Row():
+        elms[tab1][tab2]['files'] = gr.Files()
 
     elms[tab1][tab2]['save'].click(
         fn=globals()[f"save_{tab1.lower()}"],
         _js=f"save_{tab1.lower()}_{tab2.lower()}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[out_html],
+    )
+
+    elms[tab1][tab2]['download'].click(
+        fn=globals()[f"download_{tab1.lower()}_{tab2.lower()}"],
+        _js=f"rows_{tab1.lower()}_{tab2.lower()}",
+        inputs=[elms[tab1][tab2]['selected']],
+        outputs=[elms[tab1][tab2]['files']],
     )
 
     if tab1 in ['Checkpoints', 'Hypernetworks'] and tab2 == 'Active':
@@ -369,6 +407,7 @@ def table_checkpoints(name, rs):
         <tbody>
     """
 
+    paths = []
     for r in rs:
         op_html = ''
         for op in ['Default', 'Merged', 'Dreambooth', 'DreamArtist']:
@@ -389,6 +428,7 @@ def table_checkpoints(name, rs):
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """
+        paths.append(r['filepath'])
 
     code += """
         </tbody>
@@ -414,6 +454,7 @@ def table_hypernetworks(name, rs):
         <tbody>
     """
 
+    paths = []
     for r in rs:
         code += f"""
             <tr class="filer_{name}_row" data-title="{r['title']}">
@@ -426,6 +467,7 @@ def table_hypernetworks(name, rs):
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """
+        paths.append(r['filepath'])
 
     code += """
         </tbody>
@@ -447,6 +489,7 @@ def table_extensions(name, rs):
         <tbody>
     """
 
+    paths = []
     for r in rs:
         code += f"""
             <tr class="filer_{name}_row" data-title="{r['title']}">
@@ -455,6 +498,7 @@ def table_extensions(name, rs):
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """
+        paths.append(r['filepath'])
 
     code += """
         </tbody>
@@ -478,6 +522,7 @@ def table_images(name, rs):
         <tbody>
     """
 
+    paths = []
     for r in rs:
         code += f"""
             <tr class="filer_{name}_row" data-title="{r['title']}">
@@ -488,6 +533,7 @@ def table_images(name, rs):
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """
+        paths.append(r['filepath'])
 
     code += """
         </tbody>
