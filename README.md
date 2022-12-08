@@ -137,6 +137,34 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 
 ## Move / Delete
 
-- Windows だと PermissionError: [WinError 5] で一部のアクセスが拒否される
+Windows だとダメかも
+
+- PermissionError: [WinError 5] で一部ファイル(.git内のオブジェクト)のアクセスが拒否される
+- ディレクトリの内容は中途半端になる
 - sd_filer が copy したファイルでもダメ
 - かといって管理者権限でgradioを実行しましょうと言う気もないので諦める
+
+# Images
+
+- ディレクトリ単位
+- ファイル単位の処理には Image Browser を使いましょう
+
+## 一覧に表示されるディレクトリ
+
+- 既定の6つ
+  - opts.outdir_txt2img_samples
+  - opts.outdir_img2img_samples
+  - opts.outdir_extras_samples
+  - opts.outdir_txt2img_grids
+  - opts.outdir_img2img_grids
+  - opts.outdir_save
+- generate_from_jsonの2つ(インストールディレクトリを変更していない場合のみ)
+  - json
+  - webp
+- Image Browser の Others タブで追加したディレクトリ
+  - path_recorder.txtに保存されている
+
+## Move / Delete
+
+- ディレクトリ内の全ファイルではなくディレクトリごと処理します
+- よって元のディレクトリは無くなります
