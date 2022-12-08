@@ -3,13 +3,14 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 
 - Filer(フィレール)は、フランス語で「紡ぐ」という意味です
   - ただのファイラーです
-- ハードディスクとファイルをやりとりするのに便利
-  - クラウドでも便利かと思ったけどたぶん備え付けのツールのほうが便利
+- 1111の入ったSSDとバックアップのHDDをやりとりするのに便利
+- クラウドの揮発ストレージと不揮発ストレージのやりとりにも便利
 
 # At your own risk
 
 - Deleteボタンを押すと選択したファイルが消えます
-- 複数のブラウザタブ等を開いて異なる設定で動作させることはできません
+- 複数のブラウザタブ等を開いて異なる設定で動作させると大変なことが起きます
+- 第三者がgradioを操作できる場合、環境を壊したりファイルを盗んだりできます
 - その他何があっても作者は責任を負いません
 
 ## UI機能は打ち止め
@@ -26,8 +27,8 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 
 ## Extension内のjsonフォルダ
 
-- Backup Directoryの場所が保存されます
-- genre/commentが保存されます
+- Settingsの内容が保存されます
+- Commentsが保存されます
 
 ## Activeタブ
 
@@ -52,12 +53,20 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 
 ## Downloadボタン
 
+処理が重いので、うかつに複数のckptを選択してDownloadしないほうがいい
+
 - 選択したファイルをダウンロードできる一覧を画面下部に表示します
 - ファイルの場合
   - このボタンを押した時点でtmpにファイルがコピーされます
 - ディレクトリの場合
   - このボタンを押した時点でtmpにzipが作成されます
 - 画面下部のdownloadリンクを押すとダウンロード開始
+
+## Upload(画面下部)
+
+- Checkpoints, Hypernetworksではファイルのアップロードを行えます。
+- Extensions, Imagesではzipファイルのみアップロードを行えます。
+  - zipファイルはファイル名のディレクトリに展開されます。
 
 ## Copy / Moveボタン
 
@@ -177,3 +186,9 @@ Windows だとダメかも
 
 - ディレクトリ内の全ファイルではなくディレクトリごと処理します
 - よって元のディレクトリは無くなります
+
+# Settings
+
+- 最低限、Backup Directory さえ指定すれば動きます
+- タブごとに別のディレクトリを指定することもできます
+- ディレクトリが存在しない場合、自動的に作成されます
