@@ -52,12 +52,17 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 
 ## Copy / Moveボタン
 
-- shutil の copy() と move()
+- Copy
+  - ファイルは shutil.copy()
+  - ディレクトリは shutil.rmtree()
+- Move
+  - どちらも shutil.move()
 - 進捗表示出せるかは未調査だけど期待してない
 
 ## Deleteボタン
 
-- os.remove()
+- ファイルは os.remove()
+- ディレクトリは shutil.rmtree()
 
 # Checkpoint
 
@@ -124,3 +129,14 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 - state_dictにnameが入っていないケースも想定されている
 - 元のモデル情報が入っていることもあるらしいが見つかっていない
 - 学習ファイルについては、当面は自己管理を徹底するしか無さそう
+
+# Extensions
+
+- ファイルは表示対象外
+- 自分自身(sd_filer Extension)も表示対象外
+
+## Move / Delete
+
+- Windows だと PermissionError: [WinError 5] で一部のアクセスが拒否される
+- sd_filer が copy したファイルでもダメ
+- かといって管理者権限でgradioを実行しましょうと言う気もないので諦める
