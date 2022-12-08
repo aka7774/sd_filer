@@ -61,4 +61,7 @@ def list_backup():
     if not backup_dir or not os.path.exists(backup_dir):
         return []
 
-    return list(os.listdir(backup_dir))
+    dirs = []
+    for dir in os.listdir(backup_dir):
+        dirs.append(os.path.join(backup_dir, dir))
+    return list(dirs)
