@@ -43,7 +43,7 @@ def list_active():
     return list(extensions_dir)
 
 def list_backup():
-    backup_dir = filer_models.load_backup_dir()
+    backup_dir = filer_models.load_backup_dir('extensions')
     if not backup_dir or not os.path.exists(backup_dir):
         return []
 

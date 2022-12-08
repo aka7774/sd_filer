@@ -57,7 +57,7 @@ def copy(filenames, list, dst_dir):
             shutil.copytree(r['filepath'], dst_path)
         else:
             shutil.copy(r['filepath'], dst_path)
-    print("Done!")
+    print("Copy Done!")
 
 def move(filenames, list, dst_dir):
     if not dst_dir:
@@ -76,7 +76,7 @@ def move(filenames, list, dst_dir):
 
         print(f"Move {r['filepath']} to {dst_path}")
         shutil.move(r['filepath'], dst_path)
-    print("Done!")
+    print("Move Done!")
 
 def delete(filenames, list):
     for r in list:
@@ -92,7 +92,7 @@ def delete(filenames, list):
             shutil.rmtree(r['filepath'])
         else:
             os.remove(r['filepath'])
-    print("Done!")
+    print("Delete Done!")
 
 def download(filenames, list):
     files = []
@@ -105,4 +105,32 @@ def download(filenames, list):
             files.append(zip_path)
         else:
             files.append(r['filepath']) 
+    print("Download prepare Done! (Link is below)")
     return files
+
+def upload(files, dir, is_zip = False):
+    # アップロードされたファイルはtmpに存在する
+    for file in files:
+        tmp_stem, ext = os.path.splitext(os.path.basename(file.name))
+        
+        # zipモードの時は展開する
+        if is_zip:
+            if ext != '.zip':
+                raise ValueError("Only upload zip.")
+                continue
+            filename = tmp_stem[:-8]
+            filepath = os.path.join(dir, filename)
+            if os.path.exists(filepath):
+                print(f"Already exists: {filepath}")
+                continue
+            shutil.unpack_archive(file.name, filepath)
+        else:
+            # アップロードされたファイル名の末尾には8桁のランダム文字列が付与されている
+            filename = tmp_stem[:-8] + ext
+            filepath = os.path.join(dir, filename)
+
+            if os.path.exists(filepath):
+                print(f"Already exists: {filepath}")
+                continue
+            shutil.copy(file.name, filepath)
+    print("Upload Done!")

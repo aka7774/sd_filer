@@ -17,7 +17,7 @@ def js_only():
 
 # copy begin
 def copy_checkpoints_active(filenames):
-    filer_actions.copy(filenames, filer_checkpoints.list_active(), filer_models.load_backup_dir())
+    filer_actions.copy(filenames, filer_checkpoints.list_active(), filer_models.load_backup_dir('checkpoints'))
     return table_checkpoints_active()
 
 def copy_checkpoints_backup(filenames):
@@ -25,7 +25,7 @@ def copy_checkpoints_backup(filenames):
     return table_checkpoints_backup()
 
 def move_checkpoints_active(filenames):
-    filer_actions.move(filenames, filer_checkpoints.list_active(), filer_models.load_backup_dir())
+    filer_actions.move(filenames, filer_checkpoints.list_active(), filer_models.load_backup_dir('checkpoints'))
     return table_checkpoints_active()
 
 def move_checkpoints_backup(filenames):
@@ -58,6 +58,12 @@ def download_checkpoints_active(filenames):
 def download_checkpoints_backup(filenames):
     return filer_actions.download(filenames, filer_checkpoints.list_backup())
 
+def upload_checkpoints_active(files):
+    return filer_actions.upload(files, filer_checkpoints.load_active_dir())
+
+def upload_checkpoints_backup(files):
+    return filer_actions.upload(files, filer_models.load_backup_dir())
+
 def calc_checkpoints_backup(filenames):
     filer_actions.calc_sha256(filenames, filer_checkpoints.list_backup())
     return table_checkpoints_backup()
@@ -71,7 +77,7 @@ def table_checkpoints_backup():
 
 # paste
 def copy_hypernetworks_active(filenames):
-    filer_actions.copy(filenames, filer_hypernetworks.list_active(), filer_models.load_backup_dir())
+    filer_actions.copy(filenames, filer_hypernetworks.list_active(), filer_models.load_backup_dir('hypernetworks'))
     return table_hypernetworks_active()
 
 def copy_hypernetworks_backup(filenames):
@@ -79,7 +85,7 @@ def copy_hypernetworks_backup(filenames):
     return table_hypernetworks_backup()
 
 def move_hypernetworks_active(filenames):
-    filer_actions.move(filenames, filer_hypernetworks.list_active(), filer_models.load_backup_dir())
+    filer_actions.move(filenames, filer_hypernetworks.list_active(), filer_models.load_backup_dir('hypernetworks'))
     return table_hypernetworks_active()
 
 def move_hypernetworks_backup(filenames):
@@ -100,6 +106,12 @@ def download_hypernetworks_active(filenames):
 def download_hypernetworks_backup(filenames):
     return filer_actions.download(filenames, filer_hypernetworks.list_backup())
 
+def upload_hypernetworks_active(files):
+    return filer_actions.upload(files, filer_hypernetworks.load_active_dir())
+
+def upload_hypernetworks_backup(files):
+    return filer_actions.upload(files, filer_models.load_backup_dir())
+
 def calc_hypernetworks_active(filenames):
     filer_actions.calc_sha256(filenames, filer_hypernetworks.list_active())
     return table_hypernetworks_active()
@@ -119,7 +131,7 @@ def table_hypernetworks_backup():
     return table_hypernetworks('hypernetworks_backup', filer_hypernetworks.list_backup())
 #
 def copy_extensions_active(filenames):
-    filer_actions.copy(filenames, filer_extensions.list_active(), filer_models.load_backup_dir())
+    filer_actions.copy(filenames, filer_extensions.list_active(), filer_models.load_backup_dir('extensions'))
     return table_extensions_active()
 
 def copy_extensions_backup(filenames):
@@ -127,7 +139,7 @@ def copy_extensions_backup(filenames):
     return table_extensions_backup()
 
 def move_extensions_active(filenames):
-    filer_actions.move(filenames, filer_extensions.list_active(), filer_models.load_backup_dir())
+    filer_actions.move(filenames, filer_extensions.list_active(), filer_models.load_backup_dir('extensions'))
     return table_extensions_active()
 
 def move_extensions_backup(filenames):
@@ -148,6 +160,12 @@ def download_extensions_active(filenames):
 def download_extensions_backup(filenames):
     return filer_actions.download(filenames, filer_extensions.list_backup())
 
+def upload_extensions_active(files):
+    return filer_actions.upload(files, filer_extensions.load_active_dir(), True)
+
+def upload_extensions_backup(files):
+    return filer_actions.upload(files, filer_models.load_backup_dir(), True)
+
 def calc_extensions_active(filenames):
     filer_actions.calc_sha256(filenames, filer_extensions.list_active())
     return table_extensions_active()
@@ -167,7 +185,7 @@ def table_extensions_backup():
     return table_extensions('extensions_backup', filer_extensions.list_backup())
 #
 def copy_images_active(filenames):
-    filer_actions.copy(filenames, filer_images.list_active(), filer_models.load_backup_dir())
+    filer_actions.copy(filenames, filer_images.list_active(), filer_models.load_backup_dir('images'))
     return table_images_active()
 
 def copy_images_backup(filenames):
@@ -175,7 +193,7 @@ def copy_images_backup(filenames):
     return table_images_backup()
 
 def move_images_active(filenames):
-    filer_actions.move(filenames, filer_images.list_active(), filer_models.load_backup_dir())
+    filer_actions.move(filenames, filer_images.list_active(), filer_models.load_backup_dir('images'))
     return table_images_active()
 
 def move_images_backup(filenames):
@@ -195,6 +213,12 @@ def download_images_active(filenames):
 
 def download_images_backup(filenames):
     return filer_actions.download(filenames, filer_images.list_backup())
+
+def upload_images_active(files):
+    return filer_actions.upload(files, filer_images.load_active_dir(), True)
+
+def upload_images_backup(files):
+    return filer_actions.upload(files, filer_models.load_backup_dir(), True)
 
 def calc_images_active(filenames):
     filer_actions.calc_sha256(filenames, filer_images.list_active())
@@ -231,8 +255,23 @@ def make_checkpoints_backup(filenames):
     html = '<pre>' + filer_checkpoints.make_yaml(filenames, filer_checkpoints.list_backup()) + '</pre>'
     return html
 
-def save_backup_dir(backup_dir):
-    filer_models.save_backup_dir(backup_dir)
+def check_backup_dir():
+    settings = filer_models.load_settings()
+    html = ''
+    if not settings['backup_dir']:
+        html = 'First open the Settings tab and enter the backup directory'
+    return html
+
+def save_settings(backup_dir,
+                backup_checkpoints_dir,
+                backup_hypernetworks_dir,
+                backup_extensions_dir,
+                backup_images_dir):
+    return filer_models.save_settings(backup_dir,
+                backup_checkpoints_dir,
+                backup_hypernetworks_dir,
+                backup_extensions_dir,
+                backup_images_dir)
 
 elms = {}
 def ui_set(tab1, tab2):
@@ -267,7 +306,7 @@ def ui_set(tab1, tab2):
     with gr.Row():
         elms[tab1][tab2]['table'] = gr.HTML()
     with gr.Row():
-        elms[tab1][tab2]['files'] = gr.Files()
+        elms[tab1][tab2]['files'] = gr.Files(interactive=True)
 
     elms[tab1][tab2]['save'].click(
         fn=globals()[f"save_{tab1.lower()}"],
@@ -281,6 +320,12 @@ def ui_set(tab1, tab2):
         _js=f"rows_{tab1.lower()}_{tab2.lower()}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[elms[tab1][tab2]['files']],
+    )
+
+    elms[tab1][tab2]['files'].upload(
+        fn=globals()[f"upload_{tab1.lower()}_{tab2.lower()}"],
+        inputs=[elms[tab1][tab2]['files']],
+        outputs=[elms[tab1][tab2]['table']],
     )
 
     if tab1 in ['Checkpoints', 'Hypernetworks'] and tab2 == 'Active':
@@ -349,11 +394,9 @@ def ui_set(tab1, tab2):
 out_html = None
 def on_ui_tabs():
     global out_html
-    backup_dir_value = filer_models.load_backup_dir()
     with gr.Blocks() as filer:
         with gr.Row(equal_height=True):
-            backup_dir = gr.Textbox(label="Backup Directory",value=backup_dir_value)
-            out_html = gr.HTML()
+            out_html = gr.HTML(check_backup_dir())
         with gr.Tabs() as tabs:
             with gr.TabItem("Checkpoints"):
                 with gr.Tabs() as tabs:
@@ -377,11 +420,43 @@ def on_ui_tabs():
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
                         ui_set("Images", "Active")
-                    
-        backup_dir.blur(
-            fn=save_backup_dir,
-            inputs=[backup_dir],
-            outputs=[],
+                    with gr.TabItem("Backup"):
+                        ui_set("Images", "Backup")
+            with gr.TabItem("Settings"):
+                settings = filer_models.load_settings()
+                apply_settings = gr.Button("Apply settings")
+                backup_dir = gr.Textbox(label="Backup Directory",value=settings['backup_dir'])
+                backup_checkpoints_dir = gr.Textbox(
+                    label="Backup Checkpoints Directory",
+                    placeholder="{backup_dir}/checkpoints",
+                    value=settings['backup_checkpoints_dir']
+                    )
+                backup_hypernetworks_dir = gr.Textbox(
+                    label="Backup Hypernetworks Directory",
+                    placeholder="{backup_dir}/hypernetworks",
+                    value=settings['backup_hypernetworks_dir'],
+                )
+                backup_extensions_dir = gr.Textbox(
+                    label="Backup Extensions Directory",
+                    placeholder="{backup_dir}/extensions",
+                    value=settings['backup_extensions_dir'],
+                    )
+                backup_images_dir = gr.Textbox(
+                    label="Backup Images Directory",
+                    placeholder="{backup_dir}/images",
+                    value=settings['backup_images_dir'],
+                    )
+
+        apply_settings.click(
+            fn=save_settings,
+            inputs=[
+                backup_dir,
+                backup_checkpoints_dir,
+                backup_hypernetworks_dir,
+                backup_extensions_dir,
+                backup_images_dir,
+                ],
+            outputs=[out_html],
         )
 
     return (filer, "Filer", "filer"),

@@ -64,7 +64,7 @@ def list_active():
     return list(cmd_opts.hypernetwork_dir)
 
 def list_backup():
-    backup_dir = filer_models.load_backup_dir()
+    backup_dir = filer_models.load_backup_dir('hypernetworks')
     if not backup_dir or not os.path.exists(backup_dir):
         return []
 
