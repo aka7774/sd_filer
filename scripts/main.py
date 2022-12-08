@@ -10,6 +10,7 @@ import filer.actions as filer_actions
 import filer.checkpoints as filer_checkpoints
 import filer.hypernetworks as filer_hypernetworks
 import filer.extensions as filer_extensions
+import filer.images as filer_images
 
 def js_only():
     pass
@@ -142,6 +143,48 @@ def table_extensions_active():
 
 def table_extensions_backup():
     return table_extensions('extensions_backup', filer_extensions.list_backup())
+#
+def copy_images_active(filenames):
+    filer_actions.copy(filenames, filer_images.list_active(), filer_models.load_backup_dir())
+    return table_images_active()
+
+def copy_images_backup(filenames):
+    filer_actions.copy(filenames, filer_images.list_backup(), filer_images.load_active_dir())
+    return table_images_backup()
+
+def move_images_active(filenames):
+    filer_actions.move(filenames, filer_images.list_active(), filer_models.load_backup_dir())
+    return table_images_active()
+
+def move_images_backup(filenames):
+    filer_actions.move(filenames, filer_images.list_backup(), filer_images.load_active_dir())
+    return table_images_backup()
+
+def delete_images_active(filenames):
+    filer_actions.delete(filenames, filer_images.list_active())
+    return table_images_active()
+
+def delete_images_backup(filenames):
+    filer_actions.delete(filenames, filer_images.list_backup())
+    return table_images_backup()
+
+def calc_images_active(filenames):
+    filer_actions.calc_sha256(filenames, filer_images.list_active())
+    return table_images_active()
+
+def calc_images_backup(filenames):
+    filer_actions.calc_sha256(filenames, filer_images.list_backup())
+    return table_images_backup()
+
+def save_images(data):
+    filer_models.save_comment('images', data)
+    return 'saved.'
+
+def table_images_active():
+    return table_images('images_active', filer_images.list_active())
+
+def table_images_backup():
+    return table_images('images_backup', filer_images.list_backup())
 # paste end
 
 def state_hypernetworks_active(title):
@@ -173,9 +216,6 @@ def ui_set(tab1, tab2):
         elms[tab1][tab2] = {}
 
     with gr.Row():
-        if tab1 not in ['Checkpoints', 'Hypernetworks', 'Extensions']:
-            gr.HTML('Coming soon...')
-            return
         elms[tab1][tab2]['reload'] = gr.Button("Reload")
         elms[tab1][tab2]['select_all'] = gr.Button("Select All")
         elms[tab1][tab2]['deselect_all'] = gr.Button("Deselect All")
@@ -296,18 +336,9 @@ def on_ui_tabs():
                     with gr.TabItem("Backup"):
                         ui_set("Extensions", "Backup")
             with gr.TabItem("Images"):
-                with gr.TabItem("txt2img"):
-                    gr.HTML('Coming soon...')
-                with gr.TabItem("img2img"):
-                    gr.HTML('Coming soon...')
-                with gr.TabItem("Extra"):
-                    gr.HTML('Coming soon...')
-                with gr.TabItem("Favorite"):
-                    gr.HTML('Coming soon...')
-                with gr.TabItem("txt"):
-                    gr.HTML('Coming soon...')
-                with gr.TabItem("json"):
-                    gr.HTML('Coming soon...')
+                with gr.Tabs() as tabs:
+                    with gr.TabItem("Active"):
+                        ui_set("Images", "Active")
                     
         backup_dir.blur(
             fn=save_backup_dir,
@@ -421,6 +452,39 @@ def table_extensions(name, rs):
             <tr class="filer_{name}_row" data-title="{r['title']}">
                 <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
                 <td class="filer_filename">{r['filename']}</td>
+                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+            </tr>
+            """
+
+    code += """
+        </tbody>
+    </table>
+    """
+
+    return code
+
+def table_images(name, rs):
+    code = f"""
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>name</th>
+                <th>path</th>
+                <th>files</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+
+    for r in rs:
+        code += f"""
+            <tr class="filer_{name}_row" data-title="{r['title']}">
+                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                <td class="filer_filename">{r['filename']}</td>
+                <td class="filer_filepath">{r['filepath']}</td>
+                <td class="filer_files">{r['files']}</td>
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """

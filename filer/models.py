@@ -4,12 +4,6 @@ import json
 
 from modules import sd_models
 
-def get_dst_dir(src):
-    if src == 'active':
-        return load_backup_dir()
-    else:
-        return load_active_dir()
-
 def load_backup_dir():
     p = pathlib.Path(__file__).parts[-4:-2]
     filepath = os.path.join(p[0], p[1], 'json', 'config.json')
