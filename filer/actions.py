@@ -37,8 +37,7 @@ def calc_sha256(filenames, list):
         print(f"{r['filepath']} sha256: {r['sha256']}")
     print("Done!")
 
-def copy(filenames, list, src):
-    dst_dir = filer_models.get_dst_dir(src)
+def copy(filenames, list, dst_dir):
     if not dst_dir:
         raise ValueError('Please Input Backup Directory')
         return
@@ -54,11 +53,13 @@ def copy(filenames, list, src):
             continue
 
         print(f"Copy {r['filepath']} to {dst_path}")
-        shutil.copy(r['filepath'], dst_path)
+        if os.path.isdir(r['filepath']):
+            shutil.copytree(r['filepath'], dst_path)
+        else:
+            shutil.copy(r['filepath'], dst_path)
     print("Done!")
 
-def move(filenames, list, src):
-    dst_dir = filer_models.get_dst_dir(src)
+def move(filenames, list, dst_dir):
     if not dst_dir:
         raise ValueError('Please Input Backup Directory')
         return
@@ -87,5 +88,8 @@ def delete(filenames, list):
             continue
 
         print(f"Delete: {r['filepath']}")
-        os.remove(r['filepath'])
+        if os.path.isdir(r['filepath']):
+            shutil.rmtree(r['filepath'])
+        else:
+            os.remove(r['filepath'])
     print("Done!")

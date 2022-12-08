@@ -9,25 +9,26 @@ import filer.models as filer_models
 import filer.actions as filer_actions
 import filer.checkpoints as filer_checkpoints
 import filer.hypernetworks as filer_hypernetworks
+import filer.extensions as filer_extensions
 
 def js_only():
     pass
 
 # copy begin
 def copy_checkpoints_active(filenames):
-    filer_actions.copy(filenames, filer_checkpoints.list_active(), 'active')
+    filer_actions.copy(filenames, filer_checkpoints.list_active(), filer_models.load_backup_dir())
     return table_checkpoints_active()
 
 def copy_checkpoints_backup(filenames):
-    filer_actions.copy(filenames, filer_checkpoints.list_backup(), 'backup')
+    filer_actions.copy(filenames, filer_checkpoints.list_backup(), filer_checkpoints.load_active_dir())
     return table_checkpoints_backup()
 
 def move_checkpoints_active(filenames):
-    filer_actions.move(filenames, filer_checkpoints.list_active(), 'active')
+    filer_actions.move(filenames, filer_checkpoints.list_active(), filer_models.load_backup_dir())
     return table_checkpoints_active()
 
 def move_checkpoints_backup(filenames):
-    filer_actions.move(filenames, filer_checkpoints.list_backup(), 'backup')
+    filer_actions.move(filenames, filer_checkpoints.list_backup(), filer_checkpoints.load_active_dir())
     return table_checkpoints_backup()
 
 def delete_checkpoints_active(filenames):
@@ -59,19 +60,19 @@ def table_checkpoints_backup():
 
 # paste
 def copy_hypernetworks_active(filenames):
-    filer_actions.copy(filenames, filer_hypernetworks.list_active(), 'active')
+    filer_actions.copy(filenames, filer_hypernetworks.list_active(), filer_models.load_backup_dir())
     return table_hypernetworks_active()
 
 def copy_hypernetworks_backup(filenames):
-    filer_actions.copy(filenames, filer_hypernetworks.list_backup(), 'backup')
+    filer_actions.copy(filenames, filer_hypernetworks.list_backup(), filer_hypernetworks.load_active_dir())
     return table_hypernetworks_backup()
 
 def move_hypernetworks_active(filenames):
-    filer_actions.move(filenames, filer_hypernetworks.list_active(), 'active')
+    filer_actions.move(filenames, filer_hypernetworks.list_active(), filer_models.load_backup_dir())
     return table_hypernetworks_active()
 
 def move_hypernetworks_backup(filenames):
-    filer_actions.move(filenames, filer_hypernetworks.list_backup(), 'backup')
+    filer_actions.move(filenames, filer_hypernetworks.list_backup(), filer_hypernetworks.load_active_dir())
     return table_hypernetworks_backup()
 
 def delete_hypernetworks_active(filenames):
@@ -99,6 +100,48 @@ def table_hypernetworks_active():
 
 def table_hypernetworks_backup():
     return table_hypernetworks('hypernetworks_backup', filer_hypernetworks.list_backup())
+#
+def copy_extensions_active(filenames):
+    filer_actions.copy(filenames, filer_extensions.list_active(), filer_models.load_backup_dir())
+    return table_extensions_active()
+
+def copy_extensions_backup(filenames):
+    filer_actions.copy(filenames, filer_extensions.list_backup(), filer_extensions.load_active_dir())
+    return table_extensions_backup()
+
+def move_extensions_active(filenames):
+    filer_actions.move(filenames, filer_extensions.list_active(), filer_models.load_backup_dir())
+    return table_extensions_active()
+
+def move_extensions_backup(filenames):
+    filer_actions.move(filenames, filer_extensions.list_backup(), filer_extensions.load_active_dir())
+    return table_extensions_backup()
+
+def delete_extensions_active(filenames):
+    filer_actions.delete(filenames, filer_extensions.list_active())
+    return table_extensions_active()
+
+def delete_extensions_backup(filenames):
+    filer_actions.delete(filenames, filer_extensions.list_backup())
+    return table_extensions_backup()
+
+def calc_extensions_active(filenames):
+    filer_actions.calc_sha256(filenames, filer_extensions.list_active())
+    return table_extensions_active()
+
+def calc_extensions_backup(filenames):
+    filer_actions.calc_sha256(filenames, filer_extensions.list_backup())
+    return table_extensions_backup()
+
+def save_extensions(data):
+    filer_models.save_comment('extensions', data)
+    return 'saved.'
+
+def table_extensions_active():
+    return table_extensions('extensions_active', filer_extensions.list_active())
+
+def table_extensions_backup():
+    return table_extensions('extensions_backup', filer_extensions.list_backup())
 # paste end
 
 def state_hypernetworks_active(title):
@@ -130,7 +173,7 @@ def ui_set(tab1, tab2):
         elms[tab1][tab2] = {}
 
     with gr.Row():
-        if tab1 not in ['Checkpoints', 'Hypernetworks']:
+        if tab1 not in ['Checkpoints', 'Hypernetworks', 'Extensions']:
             gr.HTML('Coming soon...')
             return
         elms[tab1][tab2]['reload'] = gr.Button("Reload")
@@ -162,7 +205,7 @@ def ui_set(tab1, tab2):
         outputs=[out_html],
     )
 
-    if tab2 == 'Active':
+    if tab1 in ['Checkpoints', 'Hypernetworks'] and tab2 == 'Active':
         elms[tab1][tab2]['reload'].click(
             fn=globals()[f"table_{tab1.lower()}_{tab2.lower()}"],
             _js=f"reload_{tab1.lower()}",
@@ -349,6 +392,35 @@ def table_hypernetworks(name, rs):
                 <td class="filer_hash">{r['hash']}</td>
                 <td class="filer_sha256">{r['sha256']}</td>
                 <td><input class="filer_model" type="text" value="{r['model']}"></td>
+                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+            </tr>
+            """
+
+    code += """
+        </tbody>
+    </table>
+    """
+
+    return code
+
+def table_extensions(name, rs):
+    code = f"""
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>name</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+
+    for r in rs:
+        code += f"""
+            <tr class="filer_{name}_row" data-title="{r['title']}">
+                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                <td class="filer_filename">{r['filename']}</td>
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """

@@ -10,10 +10,6 @@ def get_dst_dir(src):
     else:
         return load_active_dir()
 
-def load_active_dir():
-    for c in sd_models.checkpoints_list.values():
-        return os.path.dirname(c.filename)
-
 def load_backup_dir():
     p = pathlib.Path(__file__).parts[-4:-2]
     filepath = os.path.join(p[0], p[1], 'json', 'config.json')

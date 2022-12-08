@@ -23,6 +23,17 @@ function save_hypernetworks(name){
     return JSON.stringify(list)
 }
 
+function save_extensions(name){
+    list = {}
+    gradioApp().querySelectorAll('.filer_'+name+'_row').forEach(function(row){
+        list[row.dataset.title] = {
+            "comment": row.querySelector('td .filer_comment').value
+        }
+    })
+
+    return JSON.stringify(list)
+}
+
 function reload_checkpoints(_, _){
     gradioApp().querySelector('#refresh_sd_model_checkpoint').click()
 }
@@ -130,5 +141,37 @@ function save_hypernetworks_active(_, _){
 
 function save_hypernetworks_backup(_, _){
 	return save_hypernetworks('hypernetworks_backup')
+}
+//
+function rows_extensions_active(_, _){
+	return rows('extensions_active')
+}
+
+function rows_extensions_backup(_, _){
+	return rows('extensions_backup')
+}
+
+function select_all_extensions_active(_, _){
+	select_all('extensions_active', true)
+}
+
+function select_all_extensions_backup(_, _){
+	select_all('extensions_backup', true)
+}
+
+function deselect_all_extensions_active(_, _){
+	select_all('extensions_active', false)
+}
+
+function deselect_all_extensions_backup(_, _){
+	select_all('extensions_backup', false)
+}
+
+function save_extensions_active(_, _){
+	return save_extensions('extensions_active')
+}
+
+function save_extensions_backup(_, _){
+	return save_extensions('extensions_backup')
 }
 // paste end

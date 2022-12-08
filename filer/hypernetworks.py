@@ -8,6 +8,9 @@ from modules.shared import opts, cmd_opts, state
 from modules.hypernetworks import hypernetwork
 from . import models as filer_models
 
+def load_active_dir():
+    return cmd_opts.hypernetwork_dir
+
 def state(tab2, filename):
     if tab2 == 'active':
         filepath = os.path.join(cmd_opts.hypernetwork_dir, filename)

@@ -5,6 +5,10 @@ import yaml
 from modules import sd_models
 from . import models as filer_models
 
+def load_active_dir():
+    for c in sd_models.checkpoints_list.values():
+        return os.path.dirname(c.filename)
+
 def list_active():
     data = filer_models.load_comment('checkpoints')
     rs = []
