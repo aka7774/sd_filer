@@ -32,10 +32,12 @@ gradioの知識が足りなくてうまく実装できてない
 
 # 共通
 
-## Backup Directory
+# Settings
 
-- 保存先のディレクトリをフルパスで入力してください
-- タブごとに別のディレクトリを指定したければ個別に入力してください
+- Backup Directory に保存先のディレクトリをフルパスで入力してください
+  - 最低限、Backup Directory さえ指定すれば動きます
+- タブごとに別のディレクトリを指定することもできます
+- ディレクトリが存在しない場合、自動的に作成されます
 
 ## Extension内のjsonフォルダ
 
@@ -82,6 +84,8 @@ gradioの知識が足りなくてうまく実装できてない
 
 ## Copy / Moveボタン
 
+sha256ファイルは同時に処理されます。
+
 - Copy
   - ファイルは shutil.copy()
   - ディレクトリは shutil.rmtree()
@@ -91,12 +95,14 @@ gradioの知識が足りなくてうまく実装できてない
 
 ## Deleteボタン
 
+sha256ファイルは同時に処理されます。
+
 - ファイルは os.remove()
 - ディレクトリは shutil.rmtree()
 
 # Checkpoint
 
-- 拡張子ckptとsafetensorに対応
+- 拡張子ckpt, safetensors, ptに対応
 
 ## Make InvokeAI models.yamlボタン
 
@@ -198,9 +204,3 @@ Windows だとダメかも
 
 - ディレクトリ内の全ファイルではなくディレクトリごと処理します
 - よって元のディレクトリは無くなります
-
-# Settings
-
-- 最低限、Backup Directory さえ指定すれば動きます
-- タブごとに別のディレクトリを指定することもできます
-- ディレクトリが存在しない場合、自動的に作成されます
