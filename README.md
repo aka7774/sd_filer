@@ -102,7 +102,7 @@ sha256ファイルは同時に処理されます。
 
 # Checkpoint
 
-- 拡張子ckpt, safetensors, ptに対応
+- 拡張子ckpt, safetensors, vae.ptに対応
 
 ## Make InvokeAI models.yamlボタン
 
