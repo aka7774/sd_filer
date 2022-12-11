@@ -52,7 +52,7 @@ def list(dir):
         r['filepath'] = filepath
         r['hash'] = sd_models.model_hash(r['filepath'])
         r['sha256_path'] = r['filepath'] + '.sha256'
-        r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:8]+'...' if os.path.exists(r['sha256_path']) else ''
+        r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
         r['model'] = d['model'] if 'model' in d else ''
         r['comment'] = d['comment'] if 'comment' in d else ''
 

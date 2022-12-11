@@ -22,7 +22,7 @@ def list_active():
         r['filepath'] = c.filename
         r['hash'] = c.hash
         r['sha256_path'] = r['filepath'] + '.sha256'
-        r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:8]+'...' if os.path.exists(r['sha256_path']) else ''
+        r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
         r['vae_path'] = os.path.splitext(r['filepath'])[0] + '.vae.pt'
         r['vae'] = 'Y' if os.path.exists(r['vae_path']) else ''
         r['yaml_path'] = os.path.splitext(r['filepath'])[0] + '.yaml'
