@@ -57,6 +57,11 @@ def copy(filenames, list, dst_dir):
             shutil.copytree(r['filepath'], dst_path)
         else:
             shutil.copy(r['filepath'], dst_path)
+            if (os.path.exists(r['filepath'] + '.sha256')):
+                try:
+                    shutil.copy(r['filepath'] + '.sha256', dst_path + '.sha256')
+                except:
+                    pass
     print("Copy Done!")
 
 def move(filenames, list, dst_dir):
@@ -76,6 +81,11 @@ def move(filenames, list, dst_dir):
 
         print(f"Move {r['filepath']} to {dst_path}")
         shutil.move(r['filepath'], dst_path)
+        if (os.path.exists(r['filepath'] + '.sha256')):
+            try:
+                shutil.move(r['filepath'] + '.sha256', dst_path + '.sha256')
+            except:
+                pass
     print("Move Done!")
 
 def delete(filenames, list):
@@ -92,6 +102,11 @@ def delete(filenames, list):
             shutil.rmtree(r['filepath'])
         else:
             os.remove(r['filepath'])
+            if (os.path.exists(r['filepath'] + '.sha256')):
+                try:
+                    os.remove(r['filepath'] + '.sha256')
+                except:
+                    pass
     print("Delete Done!")
 
 def download(filenames, list):

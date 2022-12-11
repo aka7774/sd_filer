@@ -42,7 +42,7 @@ def list_backup():
     data = filer_models.load_comment('checkpoints')
     rs = []
     for filename in os.listdir(backup_dir):
-        if not filename.endswith('.ckpt') and not filename.endswith('.safetensor'):
+        if not filename.endswith('.ckpt') and not filename.endswith('.safetensor') and not filename.endswith('.vae.pt'):
             continue
 
         d = data[filename] if filename in data else {}
