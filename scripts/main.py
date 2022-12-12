@@ -11,6 +11,7 @@ import filer.checkpoints as filer_checkpoints
 import filer.hypernetworks as filer_hypernetworks
 import filer.extensions as filer_extensions
 import filer.images as filer_images
+import filer.loras as filer_loras
 
 def js_only():
     pass
@@ -237,6 +238,64 @@ def table_images_active():
 
 def table_images_backup():
     return table_images('images_backup', filer_images.list_backup())
+#
+def copy_loras_active(filenames):
+    filer_actions.copy(filenames, filer_loras.list_active(), filer_models.load_backup_dir('loras'))
+    return table_loras_active()
+
+def copy_loras_backup(filenames):
+    filer_actions.copy(filenames, filer_loras.list_backup(), filer_loras.load_active_dir())
+    return table_loras_backup()
+
+def move_loras_active(filenames):
+    filer_actions.move(filenames, filer_loras.list_active(), filer_models.load_backup_dir('loras'))
+    return table_loras_active()
+
+def move_loras_backup(filenames):
+    filer_actions.move(filenames, filer_loras.list_backup(), filer_loras.load_active_dir())
+    return table_loras_backup()
+
+def delete_loras_active(filenames):
+    filer_actions.delete(filenames, filer_loras.list_active())
+    return table_loras_active()
+
+def delete_loras_backup(filenames):
+    filer_actions.delete(filenames, filer_loras.list_backup())
+    return table_loras_backup()
+
+def calc_loras_active(filenames):
+    filer_actions.calc_sha256(filenames, filer_loras.list_active())
+    return table_loras_active()
+
+def calc_loras_backup(filenames):
+    filer_actions.calc_sha256(filenames, filer_loras.list_backup())
+    return table_loras_backup()
+
+def save_loras(data):
+    filer_models.save_comment('loras', data)
+    return 'saved.'
+
+def download_loras_active(filenames):
+    return filer_actions.download(filenames, filer_loras.list_active())
+
+def download_loras_backup(filenames):
+    return filer_actions.download(filenames, filer_loras.list_backup())
+
+def upload_loras_active(files):
+    return filer_actions.upload(files, filer_loras.load_active_dir())
+
+def upload_loras_backup(files):
+    return filer_actions.upload(files, filer_models.load_backup_dir())
+
+def calc_loras_backup(filenames):
+    filer_actions.calc_sha256(filenames, filer_loras.list_backup())
+    return table_loras_backup()
+
+def table_loras_active():
+    return table_loras('loras_active', filer_loras.list_active())
+
+def table_loras_backup():
+    return table_loras('loras_backup', filer_loras.list_backup())
 # paste end
 
 def state_hypernetworks_active(title):
@@ -262,16 +321,8 @@ def check_backup_dir():
         html = 'First open the Settings tab and enter the backup directory'
     return html
 
-def save_settings(backup_dir,
-                backup_checkpoints_dir,
-                backup_hypernetworks_dir,
-                backup_extensions_dir,
-                backup_images_dir):
-    return filer_models.save_settings(backup_dir,
-                backup_checkpoints_dir,
-                backup_hypernetworks_dir,
-                backup_extensions_dir,
-                backup_images_dir)
+def save_settings(*input_settings):
+    return filer_models.save_settings(*input_settings)
 
 elms = {}
 def ui_set(tab1, tab2):
@@ -297,7 +348,7 @@ def ui_set(tab1, tab2):
     with gr.Row():
         if tab1 == 'Checkpoints':
             elms[tab1][tab2]['invokeai'] = gr.Button("Make InvokeAI models.yaml")
-        if tab1 in ['Checkpoints', 'Hypernetworks']:
+        if tab1 in ['Checkpoints', 'Hypernetworks', 'Loras']:
             elms[tab1][tab2]['calc_sha256'] = gr.Button("Calc SHA256")
         elms[tab1][tab2]['copy'] = gr.Button("Copy")
         elms[tab1][tab2]['move'] = gr.Button("Move")
@@ -350,7 +401,7 @@ def ui_set(tab1, tab2):
             outputs=[elms[tab1][tab2]['table']],
         )
 
-    if tab1 in ['Checkpoints', 'Hypernetworks']:
+    if tab1 in ['Checkpoints', 'Hypernetworks', 'Loras']:
         elms[tab1][tab2]['calc_sha256'].click(
             fn=globals()[f"calc_{tab1.lower()}_{tab2.lower()}"],
             _js=f"rows_{tab1.lower()}_{tab2.lower()}",
@@ -422,40 +473,22 @@ def on_ui_tabs():
                         ui_set("Images", "Active")
                     with gr.TabItem("Backup"):
                         ui_set("Images", "Backup")
+            with gr.TabItem("Loras"):
+                with gr.Tabs() as tabs:
+                    with gr.TabItem("Active"):
+                        ui_set("Loras", "Active")
+                    with gr.TabItem("Backup"):
+                        ui_set("Loras", "Backup")
             with gr.TabItem("Settings"):
-                settings = filer_models.load_settings()
                 apply_settings = gr.Button("Apply settings")
-                backup_dir = gr.Textbox(label="Backup Directory",value=settings['backup_dir'])
-                backup_checkpoints_dir = gr.Textbox(
-                    label="Backup Checkpoints Directory",
-                    placeholder="{backup_dir}/checkpoints",
-                    value=settings['backup_checkpoints_dir']
-                    )
-                backup_hypernetworks_dir = gr.Textbox(
-                    label="Backup Hypernetworks Directory",
-                    placeholder="{backup_dir}/hypernetworks",
-                    value=settings['backup_hypernetworks_dir'],
-                )
-                backup_extensions_dir = gr.Textbox(
-                    label="Backup Extensions Directory",
-                    placeholder="{backup_dir}/extensions",
-                    value=settings['backup_extensions_dir'],
-                    )
-                backup_images_dir = gr.Textbox(
-                    label="Backup Images Directory",
-                    placeholder="{backup_dir}/images",
-                    value=settings['backup_images_dir'],
-                    )
+                settings = []
+                for k, v in filer_models.load_settings().items():
+                    with gr.Row():
+                        settings.append(gr.Textbox(value=v,label=k.title()))
 
         apply_settings.click(
             fn=save_settings,
-            inputs=[
-                backup_dir,
-                backup_checkpoints_dir,
-                backup_hypernetworks_dir,
-                backup_extensions_dir,
-                backup_images_dir,
-                ],
+            inputs=settings,
             outputs=[out_html],
         )
 
@@ -482,7 +515,6 @@ def table_checkpoints(name, rs):
         <tbody>
     """
 
-    paths = []
     for r in rs:
         op_html = ''
         for op in ['Default', 'Merged', 'Dreambooth', 'DreamArtist']:
@@ -503,7 +535,6 @@ def table_checkpoints(name, rs):
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """
-        paths.append(r['filepath'])
 
     code += """
         </tbody>
@@ -529,7 +560,6 @@ def table_hypernetworks(name, rs):
         <tbody>
     """
 
-    paths = []
     for r in rs:
         code += f"""
             <tr class="filer_{name}_row" data-title="{r['title']}">
@@ -542,7 +572,6 @@ def table_hypernetworks(name, rs):
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """
-        paths.append(r['filepath'])
 
     code += """
         </tbody>
@@ -564,7 +593,6 @@ def table_extensions(name, rs):
         <tbody>
     """
 
-    paths = []
     for r in rs:
         code += f"""
             <tr class="filer_{name}_row" data-title="{r['title']}">
@@ -573,7 +601,6 @@ def table_extensions(name, rs):
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """
-        paths.append(r['filepath'])
 
     code += """
         </tbody>
@@ -597,7 +624,6 @@ def table_images(name, rs):
         <tbody>
     """
 
-    paths = []
     for r in rs:
         code += f"""
             <tr class="filer_{name}_row" data-title="{r['title']}">
@@ -608,7 +634,37 @@ def table_images(name, rs):
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """
-        paths.append(r['filepath'])
+
+    code += """
+        </tbody>
+    </table>
+    """
+
+    return code
+
+def table_loras(name, rs):
+    code = f"""
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Filename</th>
+                <th>sha256</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+
+    for r in rs:
+        code += f"""
+            <tr class="filer_{name}_row" data-title="{r['title']}">
+                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                <td class="filer_filename">{r['filename']}</td>
+                <td class="filer_sha256">{r['sha256']}</td>
+                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+            </tr>
+            """
 
     code += """
         </tbody>

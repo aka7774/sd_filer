@@ -4,16 +4,18 @@ import json
 
 from modules import sd_models
 
+default_settings = {
+    'backup_dir': '',
+    'backup_checkpoints_dir': '',
+    'backup_hypernetworks_dir': '',
+    'backup_extensions_dir': '',
+    'backup_images_dir': '',
+    'backup_loras_dir': '',
+    }
 def load_settings():
     p = pathlib.Path(__file__).parts[-4:-2]
     filepath = os.path.join(p[0], p[1], 'json', 'config.json')
-    settings = {
-        'backup_dir': '',
-        'backup_checkpoints_dir': '',
-        'backup_hypernetworks_dir': '',
-        'backup_extensions_dir': '',
-        'backup_images_dir': '',
-    }
+    settings = default_settings
     if os.path.exists(filepath):
         with open(filepath) as f:
             settings.update(json.load(f))
@@ -33,22 +35,17 @@ def load_backup_dir(name):
 
     return dir
 
-def save_settings(backup_dir,
-                backup_checkpoints_dir,
-                backup_hypernetworks_dir,
-                backup_extensions_dir,
-                backup_images_dir):
+def save_settings(*input_settings):
     p = pathlib.Path(__file__).parts[-4:-2]
     filepath = os.path.join(p[0], p[1], 'json', 'config.json')
     data = {}
     if os.path.exists(filepath):
         with open(filepath) as f:
             data = json.load(f)
-    data.update({'backup_dir': backup_dir})
-    data.update({'backup_checkpoints_dir': backup_checkpoints_dir})
-    data.update({'backup_hypernetworks_dir': backup_hypernetworks_dir})
-    data.update({'backup_extensions_dir': backup_extensions_dir})
-    data.update({'backup_images_dir': backup_images_dir})
+    i = 0
+    for k in default_settings.keys():
+        data.update({k: input_settings[i]})
+        i += 1
     with open(filepath, "w") as f:
         json.dump(data, f)
     return json.dumps(data)

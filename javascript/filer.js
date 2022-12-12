@@ -38,6 +38,10 @@ function save_images(name){
 	return save_extensions(name)
 }
 
+function save_loras(name){
+	return save_extensions(name)
+}
+
 function reload_checkpoints(_, _){
     gradioApp().querySelector('#refresh_sd_model_checkpoint').click()
 }
@@ -209,5 +213,37 @@ function save_images_active(_, _){
 
 function save_images_backup(_, _){
 	return save_images('images_backup')
+}
+//
+function rows_loras_active(_, _){
+	return rows('loras_active')
+}
+
+function rows_loras_backup(_, _){
+	return rows('loras_backup')
+}
+
+function select_all_loras_active(_, _){
+	select_all('loras_active', true)
+}
+
+function select_all_loras_backup(_, _){
+	select_all('loras_backup', true)
+}
+
+function deselect_all_loras_active(_, _){
+	select_all('loras_active', false)
+}
+
+function deselect_all_loras_backup(_, _){
+	select_all('loras_backup', false)
+}
+
+function save_loras_active(_, _){
+	return save_loras('loras_active')
+}
+
+function save_loras_backup(_, _){
+	return save_loras('loras_backup')
 }
 // paste end
