@@ -10,6 +10,7 @@ default_settings = {
     'backup_hypernetworks_dir': '',
     'backup_extensions_dir': '',
     'backup_images_dir': '',
+    'backup_dreambooths_dir': '',
     'backup_loras_dir': '',
     }
 def load_settings():

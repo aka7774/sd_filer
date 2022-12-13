@@ -26,10 +26,9 @@ def list(dir):
         if not os.path.isdir(os.path.join(dir, filename)):
             continue
 
-        r = {}
-
         d = data[filename] if filename in data else {}
 
+        r = {}
         r['title'] = filename
         r['filename'] = filename
         r['filepath'] = os.path.join(dir, filename)
@@ -40,7 +39,7 @@ def list(dir):
     return rs
 
 def list_active():
-    return list(extensions_dir)
+    return list(load_active_dir())
 
 def list_backup():
     backup_dir = filer_models.load_backup_dir('extensions')

@@ -11,6 +11,7 @@ import filer.checkpoints as filer_checkpoints
 import filer.hypernetworks as filer_hypernetworks
 import filer.extensions as filer_extensions
 import filer.images as filer_images
+import filer.dreambooths as filer_dreambooths
 import filer.loras as filer_loras
 
 def js_only():
@@ -239,6 +240,64 @@ def table_images_active():
 def table_images_backup():
     return table_images('images_backup', filer_images.list_backup())
 #
+def copy_dreambooths_active(filenames):
+    filer_actions.copy(filenames, filer_dreambooths.list_active(), filer_models.load_backup_dir('dreambooths'))
+    return table_dreambooths_active()
+
+def copy_dreambooths_backup(filenames):
+    filer_actions.copy(filenames, filer_dreambooths.list_backup(), filer_dreambooths.load_active_dir())
+    return table_dreambooths_backup()
+
+def move_dreambooths_active(filenames):
+    filer_actions.move(filenames, filer_dreambooths.list_active(), filer_models.load_backup_dir('dreambooths'))
+    return table_dreambooths_active()
+
+def move_dreambooths_backup(filenames):
+    filer_actions.move(filenames, filer_dreambooths.list_backup(), filer_dreambooths.load_active_dir())
+    return table_dreambooths_backup()
+
+def delete_dreambooths_active(filenames):
+    filer_actions.delete(filenames, filer_dreambooths.list_active())
+    return table_dreambooths_active()
+
+def delete_dreambooths_backup(filenames):
+    filer_actions.delete(filenames, filer_dreambooths.list_backup())
+    return table_dreambooths_backup()
+
+def calc_dreambooths_active(filenames):
+    filer_actions.calc_sha256(filenames, filer_dreambooths.list_active())
+    return table_dreambooths_active()
+
+def calc_dreambooths_backup(filenames):
+    filer_actions.calc_sha256(filenames, filer_dreambooths.list_backup())
+    return table_dreambooths_backup()
+
+def save_dreambooths(data):
+    filer_models.save_comment('dreambooths', data)
+    return 'saved.'
+
+def download_dreambooths_active(filenames):
+    return filer_actions.download(filenames, filer_dreambooths.list_active())
+
+def download_dreambooths_backup(filenames):
+    return filer_actions.download(filenames, filer_dreambooths.list_backup())
+
+def upload_dreambooths_active(files):
+    return filer_actions.upload(files, filer_dreambooths.load_active_dir(), True)
+
+def upload_dreambooths_backup(files):
+    return filer_actions.upload(files, filer_models.load_backup_dir(), True)
+
+def calc_dreambooths_backup(filenames):
+    filer_actions.calc_sha256(filenames, filer_dreambooths.list_backup())
+    return table_dreambooths_backup()
+
+def table_dreambooths_active():
+    return table_dreambooths('dreambooths_active', filer_dreambooths.list_active())
+
+def table_dreambooths_backup():
+    return table_dreambooths('dreambooths_backup', filer_dreambooths.list_backup())
+#
 def copy_loras_active(filenames):
     filer_actions.copy(filenames, filer_loras.list_active(), filer_models.load_backup_dir('loras'))
     return table_loras_active()
@@ -455,6 +514,18 @@ def on_ui_tabs():
                         ui_set("Checkpoints", "Active")
                     with gr.TabItem("Backup"):
                         ui_set("Checkpoints", "Backup")
+            with gr.TabItem("Dreambooths"):
+                with gr.Tabs() as tabs:
+                    with gr.TabItem("Active"):
+                        ui_set("Dreambooths", "Active")
+                    with gr.TabItem("Backup"):
+                        ui_set("Dreambooths", "Backup")
+            with gr.TabItem("Loras"):
+                with gr.Tabs() as tabs:
+                    with gr.TabItem("Active"):
+                        ui_set("Loras", "Active")
+                    with gr.TabItem("Backup"):
+                        ui_set("Loras", "Backup")
             with gr.TabItem("Hypernetworks"):
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
@@ -473,12 +544,6 @@ def on_ui_tabs():
                         ui_set("Images", "Active")
                     with gr.TabItem("Backup"):
                         ui_set("Images", "Backup")
-            with gr.TabItem("Loras"):
-                with gr.Tabs() as tabs:
-                    with gr.TabItem("Active"):
-                        ui_set("Loras", "Active")
-                    with gr.TabItem("Backup"):
-                        ui_set("Loras", "Backup")
             with gr.TabItem("Settings"):
                 apply_settings = gr.Button("Apply settings")
                 settings = []
@@ -631,6 +696,35 @@ def table_images(name, rs):
                 <td class="filer_filename">{r['filename']}</td>
                 <td class="filer_filepath">{r['filepath']}</td>
                 <td class="filer_files">{r['files']}</td>
+                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+            </tr>
+            """
+
+    code += """
+        </tbody>
+    </table>
+    """
+
+    return code
+
+def table_dreambooths(name, rs):
+    code = f"""
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>name</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+
+    for r in rs:
+        code += f"""
+            <tr class="filer_{name}_row" data-title="{r['title']}">
+                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                <td class="filer_filename">{r['filename']}</td>
                 <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
             </tr>
             """

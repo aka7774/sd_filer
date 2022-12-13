@@ -4,6 +4,7 @@ import pathlib
 import hashlib
 
 from . import models as filer_models
+from . import images as filer_images
 
 def calc_hash(algo, filepath):
     # ハッシュオブジェクトを作ります
@@ -139,6 +140,9 @@ def upload(files, dir, is_zip = False):
                 print(f"Already exists: {filepath}")
                 continue
             shutil.unpack_archive(file.name, filepath)
+            # imagesの時は一覧への追加を試みる
+            if not dir:
+                filer_images.list_append(filename)
         else:
             # アップロードされたファイル名の末尾には8桁のランダム文字列が付与されている
             filename = tmp_stem[:-8] + ext

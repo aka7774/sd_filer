@@ -65,3 +65,17 @@ def list_backup():
     for dir in os.listdir(backup_dir):
         dirs.append(os.path.join(backup_dir, dir))
     return list(dirs)
+
+def list_append(filename):
+    paths = os.path.join('extensions', 'stable-diffusion-webui-images-browser', 'path_recorder.txt')
+    if os.path.exists(paths):
+        with open(paths, 'a+') as f:
+            f.seek(0)
+            # 既に存在すれば何もしない
+            for line in f:
+                dir = line.rstrip("\r\n")
+                if (dir == filename):
+                    return
+            # 存在しなければ末尾に追加
+            f.seek(0, 2)
+            f.write(f"{filename}\n")
