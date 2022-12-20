@@ -373,6 +373,14 @@ def make_checkpoints_backup(filenames):
     html = '<pre>' + filer_checkpoints.make_yaml(filenames, filer_checkpoints.list_backup()) + '</pre>'
     return html
 
+def convert_checkpoints_active(filenames):
+    filer_checkpoints.convert_safetensors(filenames, filer_checkpoints.list_active())
+    return table_checkpoints_active()
+
+def convert_checkpoints_backup(filenames):
+    filer_checkpoints.convert_safetensors(filenames, filer_checkpoints.list_backup())
+    return table_checkpoints_backup()
+
 def check_backup_dir():
     settings = filer_models.load_settings()
     html = ''
@@ -407,6 +415,7 @@ def ui_set(tab1, tab2):
     with gr.Row():
         if tab1 == 'Checkpoints':
             elms[tab1][tab2]['invokeai'] = gr.Button("Make InvokeAI models.yaml")
+            elms[tab1][tab2]['safetensors'] = gr.Button("Convert to safetensors")
         if tab1 in ['Checkpoints', 'Hypernetworks', 'Loras']:
             elms[tab1][tab2]['calc_sha256'] = gr.Button("Calc SHA256")
         elms[tab1][tab2]['copy'] = gr.Button("Copy")
@@ -455,6 +464,12 @@ def ui_set(tab1, tab2):
     if tab1 == 'Checkpoints':
         elms[tab1][tab2]['invokeai'].click(
             fn=globals()[f"make_{tab1.lower()}_{tab2.lower()}"],
+            _js=f"rows_{tab1.lower()}_{tab2.lower()}",
+            inputs=[elms[tab1][tab2]['selected']],
+            outputs=[elms[tab1][tab2]['table']],
+        )
+        elms[tab1][tab2]['safetensors'].click(
+            fn=globals()[f"convert_{tab1.lower()}_{tab2.lower()}"],
             _js=f"rows_{tab1.lower()}_{tab2.lower()}",
             inputs=[elms[tab1][tab2]['selected']],
             outputs=[elms[tab1][tab2]['table']],

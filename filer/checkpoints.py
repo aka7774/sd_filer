@@ -1,6 +1,8 @@
 import os
 import pathlib
 import yaml
+import torch
+from safetensors.torch import save_file
 
 from modules import sd_models
 from . import models as filer_models
@@ -65,3 +67,18 @@ def make_yaml(filenames, list):
             y[r['filename']]['vae'] = r['vae_path']
 
     return yaml.dump(y)
+
+def convert_safetensors(filenames, list):
+    for r in list:
+        if r['filename'] not in filenames.split(','):
+            continue
+        if not r['filename'].endswith('.ckpt'):
+            continue
+
+        dst_path = os.path.splitext(r['filepath'])[0] + '.safetensors'
+
+        with torch.no_grad():
+            weights = torch.load(r['filepath'])["state_dict"]
+            save_file(weights, dst_path)
+            print(f"{dst_path} saved.")
+    return "converted."
