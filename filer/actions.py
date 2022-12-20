@@ -2,6 +2,7 @@ import os
 import shutil
 import pathlib
 import hashlib
+import requests
 
 from . import models as filer_models
 from . import images as filer_images
@@ -153,3 +154,22 @@ def upload(files, dir, is_zip = False):
                 continue
             shutil.copy(file.name, filepath)
     print("Upload Done!")
+
+def urls(urls, dst_dir):
+    for url in urls.split("\n"):
+        url = url.rstrip("\r")
+        filename = os.path.basename(url)
+        dst_path = os.path.join(dst_dir, filename)
+        if os.path.exists(dst_path):
+            raise ValueError(f"{dst_path} Already exists.")
+        print(f"Downloading {url}")
+        res = requests.get(url, stream=True)
+        if res.status_code == 200:
+            size = res.headers.get('content-length', -1)
+            print(f"Content-Length: {size}")
+            with open(dst_path, 'wb') as f:
+                for chunk in res.iter_content(chunk_size=1024):
+                    if chunk:
+                        f.write(chunk)
+                        f.flush()
+                print(f"Done.")

@@ -3,6 +3,7 @@ import pathlib
 
 from modules import sd_models
 from . import models as filer_models
+from . import actions as filer_actions
 
 def load_active_dir():
     return "models/lora"
@@ -36,6 +37,9 @@ def list_backup():
     if not backup_dir or not os.path.exists(backup_dir):
         return []
     return get_list(backup_dir)
+    
+def urls(urls):
+    return filer_actions.urls(urls, load_active_dir())
 
 def table(name, rs):
     code = f"""

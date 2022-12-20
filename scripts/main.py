@@ -389,6 +389,18 @@ def check_backup_dir():
         html = 'First open the Settings tab and enter the backup directory'
     return html
 
+def urls_checkpoints(urls):
+    filer_checkpoints.urls(urls)
+    return 'Downloaded.'
+
+def urls_hypernetworks(urls):
+    filer_hypernetworks.urls(urls)
+    return 'Downloaded.'
+
+def urls_loras(urls):
+    filer_loras.urls(urls)
+    return 'Downloaded.'
+
 def save_settings(*input_settings):
     return filer_models.save_settings(*input_settings)
 
@@ -400,6 +412,21 @@ def ui_set(tab1, tab2):
         elms[tab1] = {}
     if not tab2 in elms[tab1]:
         elms[tab1][tab2] = {}
+
+    if tab2 == 'Download':
+        elms[tab1][tab2]['urls'] = gr.Textbox(
+            label='URLs',
+            lines=10,
+            interactive=True
+        )
+        elms[tab1][tab2]['download'] = gr.Button("Download")
+        elms[tab1][tab2]['download'].click(
+            fn=globals()[f"urls_{tab1.lower()}"],
+            inputs=[elms[tab1][tab2]['urls']],
+#            outputs=[elms[tab1][tab2]['table']],
+            outputs=[out_html],
+        )
+        return
 
     with gr.Row():
         elms[tab1][tab2]['reload'] = gr.Button("Reload")
@@ -530,6 +557,8 @@ def on_ui_tabs():
                         ui_set("Checkpoints", "Active")
                     with gr.TabItem("Backup"):
                         ui_set("Checkpoints", "Backup")
+                    with gr.TabItem("Download"):
+                        ui_set("Checkpoints", "Download")
             with gr.TabItem("Dreambooths"):
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
@@ -542,12 +571,16 @@ def on_ui_tabs():
                         ui_set("Loras", "Active")
                     with gr.TabItem("Backup"):
                         ui_set("Loras", "Backup")
+                    with gr.TabItem("Download"):
+                        ui_set("Loras", "Download")
             with gr.TabItem("Hypernetworks"):
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
                         ui_set("Hypernetworks", "Active")
                     with gr.TabItem("Backup"):
                         ui_set("Hypernetworks", "Backup")
+                    with gr.TabItem("Download"):
+                        ui_set("Hypernetworks", "Download")
             with gr.TabItem("Extensions"):
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):

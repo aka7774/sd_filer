@@ -7,6 +7,7 @@ from modules import sd_models
 from modules.shared import opts, cmd_opts, state
 from modules.hypernetworks import hypernetwork
 from . import models as filer_models
+from . import actions as filer_actions
 
 def load_active_dir():
     return cmd_opts.hypernetwork_dir
@@ -69,6 +70,9 @@ def list_backup():
         return []
 
     return get_list(backup_dir)
+
+def urls(urls):
+    return filer_actions.urls(urls, load_active_dir())
 
 def table(name, rs):
     code = f"""

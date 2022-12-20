@@ -6,6 +6,7 @@ from safetensors.torch import save_file
 
 from modules import sd_models
 from . import models as filer_models
+from . import actions as filer_actions
 
 def load_active_dir():
     for c in sd_models.checkpoints_list.values():
@@ -82,6 +83,9 @@ def convert_safetensors(filenames, list):
             save_file(weights, dst_path)
             print(f"{dst_path} saved.")
     return "converted."
+    
+def urls(urls):
+    return filer_actions.urls(urls, load_active_dir())
 
 def table(name, rs):
     code = f"""
