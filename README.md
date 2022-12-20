@@ -204,3 +204,26 @@ Windows だとダメかも
 
 - ディレクトリ内の全ファイルではなくディレクトリごと処理します
 - よって元のディレクトリは無くなります
+
+# Files
+
+- ファイル単位
+- 設定ファイルとかログファイルとかをさっさと見たりいじったり
+
+## 一覧に表示されるファイル
+
+- 既定の5つ
+  - config.json
+  - ui-config.json
+  - extensions/stable-diffusion-webui-images-browser/path_recorder.txt
+  - extensions/sdweb-merge-block-weighted-gui/csv/history.tsv
+  - extensions/sdweb-merge-block-weighted-gui/csv/preset.tsv
+
+## Load
+
+- 画面中段のテキストエリアに読み込む
+- 編集してSaveで保存できる
+
+## Download
+
+- 他と同じ
