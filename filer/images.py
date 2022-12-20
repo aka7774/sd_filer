@@ -11,7 +11,7 @@ from . import models as filer_models
 def load_active_dir():
     return ''
 
-def list(dirs):
+def get_list(dirs):
     data = filer_models.load_comment('images')
     
     p = pathlib.Path(__file__).parts[-3]
@@ -54,7 +54,7 @@ def list_active():
         with open(paths) as f:
             for line in f:
                 image_dirs.append(line.rstrip("\r\n"))
-    return list(image_dirs)
+    return get_list(image_dirs)
 
 def list_backup():
     backup_dir = filer_models.load_backup_dir('images')
@@ -64,7 +64,7 @@ def list_backup():
     dirs = []
     for dir in os.listdir(backup_dir):
         dirs.append(os.path.join(backup_dir, dir))
-    return list(dirs)
+    return get_list(dirs)
 
 def list_append(filename):
     paths = os.path.join('extensions', 'stable-diffusion-webui-images-browser', 'path_recorder.txt')
@@ -79,3 +79,36 @@ def list_append(filename):
             # 存在しなければ末尾に追加
             f.seek(0, 2)
             f.write(f"{filename}\n")
+
+def table(name, rs):
+    code = f"""
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>name</th>
+                <th>path</th>
+                <th>files</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+
+    for r in rs:
+        code += f"""
+            <tr class="filer_{name}_row" data-title="{r['title']}">
+                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                <td class="filer_filename">{r['filename']}</td>
+                <td class="filer_filepath">{r['filepath']}</td>
+                <td class="filer_files">{r['files']}</td>
+                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+            </tr>
+            """
+
+    code += """
+        </tbody>
+    </table>
+    """
+
+    return code

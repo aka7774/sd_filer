@@ -11,7 +11,7 @@ def load_active_dir():
     for c in sd_models.checkpoints_list.values():
         return os.path.dirname(c.filename)
 
-def list(dir):
+def get_list(dir):
     data = filer_models.load_comment('checkpoints')
     rs = []
     for filename in os.listdir(dir):
@@ -39,13 +39,13 @@ def list(dir):
     return rs
 
 def list_active():
-    return list(load_active_dir())
+    return get_list(load_active_dir())
 
 def list_backup():
     backup_dir = filer_models.load_backup_dir('checkpoints')
     if not backup_dir or not os.path.exists(backup_dir):
         return []
-    return list(backup_dir)
+    return get_list(backup_dir)
 
 def make_yaml(filenames, list):
     y = {}
@@ -82,3 +82,49 @@ def convert_safetensors(filenames, list):
             save_file(weights, dst_path)
             print(f"{dst_path} saved.")
     return "converted."
+
+def table(name, rs):
+    code = f"""
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Filename</th>
+                <th>hash</th>
+                <th>sha256</th>
+                <th>vae.pt</th>
+                <th>yaml</th>
+                <th>Genre</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+
+    for r in rs:
+        op_html = ''
+        for op in ['Default', 'Merged', 'Dreambooth', 'DreamArtist']:
+            if op == r['genre']:
+                op_html += '<option selected>' + op
+            else:
+                op_html += '<option>' + op
+
+        code += f"""
+            <tr class="filer_{name}_row" data-title="{r['title']}">
+                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                <td class="filer_filename">{r['filename']}</td>
+                <td class="filer_hash">{r['hash']}</td>
+                <td class="filer_sha256">{r['sha256']}</td>
+                <td class="filer_vae">{r['vae']}</td>
+                <td class="filer_yaml">{r['yaml']}</td>
+                <td><select class="filer_genre">{op_html}</select></td>
+                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+            </tr>
+            """
+
+    code += """
+        </tbody>
+    </table>
+    """
+
+    return code

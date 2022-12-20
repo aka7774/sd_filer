@@ -13,6 +13,7 @@ import filer.extensions as filer_extensions
 import filer.images as filer_images
 import filer.dreambooths as filer_dreambooths
 import filer.loras as filer_loras
+import filer.files as filer_files
 
 def js_only():
     pass
@@ -71,10 +72,10 @@ def calc_checkpoints_backup(filenames):
     return table_checkpoints_backup()
 
 def table_checkpoints_active():
-    return table_checkpoints('checkpoints_active', filer_checkpoints.list_active())
+    return filer_checkpoints.table('checkpoints_active', filer_checkpoints.list_active())
 
 def table_checkpoints_backup():
-    return table_checkpoints('checkpoints_backup', filer_checkpoints.list_backup())
+    return filer_checkpoints.table('checkpoints_backup', filer_checkpoints.list_backup())
 # copy end
 
 # paste
@@ -127,10 +128,10 @@ def save_hypernetworks(data):
     return 'saved.'
 
 def table_hypernetworks_active():
-    return table_hypernetworks('hypernetworks_active', filer_hypernetworks.list_active())
+    return filer_hypernetworks.table('hypernetworks_active', filer_hypernetworks.list_active())
 
 def table_hypernetworks_backup():
-    return table_hypernetworks('hypernetworks_backup', filer_hypernetworks.list_backup())
+    return filer_hypernetworks.table('hypernetworks_backup', filer_hypernetworks.list_backup())
 #
 def copy_extensions_active(filenames):
     filer_actions.copy(filenames, filer_extensions.list_active(), filer_models.load_backup_dir('extensions'))
@@ -181,10 +182,10 @@ def save_extensions(data):
     return 'saved.'
 
 def table_extensions_active():
-    return table_extensions('extensions_active', filer_extensions.list_active())
+    return filer_extensions.table('extensions_active', filer_extensions.list_active())
 
 def table_extensions_backup():
-    return table_extensions('extensions_backup', filer_extensions.list_backup())
+    return filer_extensions.table('extensions_backup', filer_extensions.list_backup())
 #
 def copy_images_active(filenames):
     filer_actions.copy(filenames, filer_images.list_active(), filer_models.load_backup_dir('images'))
@@ -235,10 +236,10 @@ def save_images(data):
     return 'saved.'
 
 def table_images_active():
-    return table_images('images_active', filer_images.list_active())
+    return filer_images.table('images_active', filer_images.list_active())
 
 def table_images_backup():
-    return table_images('images_backup', filer_images.list_backup())
+    return filer_images.table('images_backup', filer_images.list_backup())
 #
 def copy_dreambooths_active(filenames):
     filer_actions.copy(filenames, filer_dreambooths.list_active(), filer_models.load_backup_dir('dreambooths'))
@@ -293,10 +294,10 @@ def calc_dreambooths_backup(filenames):
     return table_dreambooths_backup()
 
 def table_dreambooths_active():
-    return table_dreambooths('dreambooths_active', filer_dreambooths.list_active())
+    return filer_dreambooths.table('dreambooths_active', filer_dreambooths.list_active())
 
 def table_dreambooths_backup():
-    return table_dreambooths('dreambooths_backup', filer_dreambooths.list_backup())
+    return filer_dreambooths.table('dreambooths_backup', filer_dreambooths.list_backup())
 #
 def copy_loras_active(filenames):
     filer_actions.copy(filenames, filer_loras.list_active(), filer_models.load_backup_dir('loras'))
@@ -351,10 +352,10 @@ def calc_loras_backup(filenames):
     return table_loras_backup()
 
 def table_loras_active():
-    return table_loras('loras_active', filer_loras.list_active())
+    return filer_loras.table('loras_active', filer_loras.list_active())
 
 def table_loras_backup():
-    return table_loras('loras_backup', filer_loras.list_backup())
+    return filer_loras.table('loras_backup', filer_loras.list_backup())
 # paste end
 
 def state_hypernetworks_active(title):
@@ -559,6 +560,36 @@ def on_ui_tabs():
                         ui_set("Images", "Active")
                     with gr.TabItem("Backup"):
                         ui_set("Images", "Backup")
+            with gr.TabItem("Files"):
+                files_reload = gr.Button("Reload")
+                files_table = gr.HTML()
+                files_title = gr.Text(elem_id=f"files_title", visible=False).style(container=False)
+                files_load = gr.Button(elem_id=f"load_files_button", visible=False).style(container=False)
+                files_download = gr.Button(elem_id=f"download_files_button", visible=False).style(container=False)
+                files_edit = gr.Textbox(lines=10,interactive=True,label='Loaded File')
+                files_save = gr.Button("Save")
+                files_files = gr.Files(interactive=False)
+                files_reload.click(
+                    fn=filer_files.table,
+                    inputs=[],
+                    outputs=[files_table],
+                    )
+                files_load.click(
+                    fn=filer_files.load,
+                    inputs=[files_title],
+                    outputs=[files_edit],
+                    )
+                files_save.click(
+                    fn=filer_files.save,
+                    inputs=[files_title, files_edit],
+                    outputs=[out_html],
+                    )
+                files_download.click(
+                    fn=filer_files.download,
+                    inputs=[files_title],
+                    outputs=[files_files],
+                    )
+
             with gr.TabItem("Settings"):
                 apply_settings = gr.Button("Apply settings")
                 settings = []
@@ -576,208 +607,3 @@ def on_ui_tabs():
 
 
 script_callbacks.on_ui_tabs(on_ui_tabs)
-
-def table_checkpoints(name, rs):
-    code = f"""
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>Filename</th>
-                <th>hash</th>
-                <th>sha256</th>
-                <th>vae.pt</th>
-                <th>yaml</th>
-                <th>Genre</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-
-    for r in rs:
-        op_html = ''
-        for op in ['Default', 'Merged', 'Dreambooth', 'DreamArtist']:
-            if op == r['genre']:
-                op_html += '<option selected>' + op
-            else:
-                op_html += '<option>' + op
-
-        code += f"""
-            <tr class="filer_{name}_row" data-title="{r['title']}">
-                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                <td class="filer_filename">{r['filename']}</td>
-                <td class="filer_hash">{r['hash']}</td>
-                <td class="filer_sha256">{r['sha256']}</td>
-                <td class="filer_vae">{r['vae']}</td>
-                <td class="filer_yaml">{r['yaml']}</td>
-                <td><select class="filer_genre">{op_html}</select></td>
-                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
-            </tr>
-            """
-
-    code += """
-        </tbody>
-    </table>
-    """
-
-    return code
-
-def table_hypernetworks(name, rs):
-    code = f"""
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>Filename</th>
-                <th>state</th>
-                <th>hash</th>
-                <th>sha256</th>
-                <th>Model</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-
-    for r in rs:
-        code += f"""
-            <tr class="filer_{name}_row" data-title="{r['title']}">
-                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                <td class="filer_filename">{r['filename']}</td>
-                <td class="filer_state"><input onclick="state_{name}(this, '{r['title']}')" type="button" value="state" class="gr-button gr-button-lg gr-button-secondary"></td>
-                <td class="filer_hash">{r['hash']}</td>
-                <td class="filer_sha256">{r['sha256']}</td>
-                <td><input class="filer_model" type="text" value="{r['model']}"></td>
-                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
-            </tr>
-            """
-
-    code += """
-        </tbody>
-    </table>
-    """
-
-    return code
-
-def table_extensions(name, rs):
-    code = f"""
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>name</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-
-    for r in rs:
-        code += f"""
-            <tr class="filer_{name}_row" data-title="{r['title']}">
-                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                <td class="filer_filename">{r['filename']}</td>
-                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
-            </tr>
-            """
-
-    code += """
-        </tbody>
-    </table>
-    """
-
-    return code
-
-def table_images(name, rs):
-    code = f"""
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>name</th>
-                <th>path</th>
-                <th>files</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-
-    for r in rs:
-        code += f"""
-            <tr class="filer_{name}_row" data-title="{r['title']}">
-                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                <td class="filer_filename">{r['filename']}</td>
-                <td class="filer_filepath">{r['filepath']}</td>
-                <td class="filer_files">{r['files']}</td>
-                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
-            </tr>
-            """
-
-    code += """
-        </tbody>
-    </table>
-    """
-
-    return code
-
-def table_dreambooths(name, rs):
-    code = f"""
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>name</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-
-    for r in rs:
-        code += f"""
-            <tr class="filer_{name}_row" data-title="{r['title']}">
-                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                <td class="filer_filename">{r['filename']}</td>
-                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
-            </tr>
-            """
-
-    code += """
-        </tbody>
-    </table>
-    """
-
-    return code
-
-def table_loras(name, rs):
-    code = f"""
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>Filename</th>
-                <th>sha256</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-
-    for r in rs:
-        code += f"""
-            <tr class="filer_{name}_row" data-title="{r['title']}">
-                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                <td class="filer_filename">{r['filename']}</td>
-                <td class="filer_sha256">{r['sha256']}</td>
-                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
-            </tr>
-            """
-
-    code += """
-        </tbody>
-    </table>
-    """
-
-    return code

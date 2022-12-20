@@ -69,6 +69,22 @@ function state_hypernetworks_backup(button, title){
 	return state_hypernetworks('hypernetworks_backup', title)
 }
 
+function load_files(button, title) {
+	name = 'files'
+    textarea = gradioApp().querySelector('#'+name+'_title textarea')
+    textarea.value = title
+	textarea.dispatchEvent(new Event("input", { bubbles: true }))
+    gradioApp().querySelector('#load_'+name+'_button').click()
+}
+
+function download_files(button, title) {
+	name = 'files'
+    textarea = gradioApp().querySelector('#'+name+'_title textarea')
+    textarea.value = title
+	textarea.dispatchEvent(new Event("input", { bubbles: true }))
+    gradioApp().querySelector('#download_'+name+'_button').click()
+}
+
 function rows(name){
     selected = []
     gradioApp().querySelectorAll('.filer_'+name+'_select').forEach(function(x){

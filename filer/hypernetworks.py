@@ -37,7 +37,7 @@ def state(tab2, filename):
 
     return r
 
-def list(dir):
+def get_list(dir):
     data = filer_models.load_comment('hypernetworks')
     
     rs = []
@@ -61,11 +61,48 @@ def list(dir):
     return rs
 
 def list_active():
-    return list(cmd_opts.hypernetwork_dir)
+    return get_list(cmd_opts.hypernetwork_dir)
 
 def list_backup():
     backup_dir = filer_models.load_backup_dir('hypernetworks')
     if not backup_dir or not os.path.exists(backup_dir):
         return []
 
-    return list(backup_dir)
+    return get_list(backup_dir)
+
+def table(name, rs):
+    code = f"""
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Filename</th>
+                <th>state</th>
+                <th>hash</th>
+                <th>sha256</th>
+                <th>Model</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+
+    for r in rs:
+        code += f"""
+            <tr class="filer_{name}_row" data-title="{r['title']}">
+                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                <td class="filer_filename">{r['filename']}</td>
+                <td class="filer_state"><input onclick="state_{name}(this, '{r['title']}')" type="button" value="state" class="gr-button gr-button-lg gr-button-secondary"></td>
+                <td class="filer_hash">{r['hash']}</td>
+                <td class="filer_sha256">{r['sha256']}</td>
+                <td><input class="filer_model" type="text" value="{r['model']}"></td>
+                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+            </tr>
+            """
+
+    code += """
+        </tbody>
+    </table>
+    """
+
+    return code
