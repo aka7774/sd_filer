@@ -5,7 +5,7 @@ from modules import sd_models
 from . import models as filer_models
 
 def load_active_dir():
-    return "models/dreambooth"
+    return os.path.abspath("models/dreambooth")
 
 def get_list(dir):
     data = filer_models.load_comment('dreambooths')

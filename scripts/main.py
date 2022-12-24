@@ -345,7 +345,7 @@ def upload_loras_active(files):
     return filer_actions.upload(files, filer_loras.load_active_dir())
 
 def upload_loras_backup(files):
-    return filer_actions.upload(files, filer_models.load_backup_dir())
+    return filer_actions.upload(files, filer_models.load_backup_dir('loras'))
 
 def calc_loras_backup(filenames):
     filer_actions.calc_sha256(filenames, filer_loras.list_backup())
@@ -402,9 +402,27 @@ def urls_loras(urls):
     return 'Downloaded.'
 
 def save_settings(*input_settings):
-    return filer_models.save_settings(*input_settings)
+    return [
+        filer_models.save_settings(*input_settings),
+        filer_models.load_backup_dir('checkpoints'),
+        filer_models.load_backup_dir('dreambooths'),
+        filer_models.load_backup_dir('loras'),
+        filer_models.load_backup_dir('hypernetworks'),
+        filer_models.load_backup_dir('extensions'),
+        ]
 
 elms = {}
+
+def ui_dir(tab1):
+    global elms
+
+    if not tab1 in elms:
+        elms[tab1] = {}
+
+    with gr.Row():
+        elms[tab1]['active_dir'] = gr.Textbox(value=globals()[f"filer_{tab1.lower()}"].load_active_dir(), label="Active Dir", interactive=False)
+        elms[tab1]['backup_dir'] = gr.Textbox(value=filer_models.load_backup_dir(tab1.lower()),label="Backup Dir", interactive=False)
+
 def ui_set(tab1, tab2):
     global elms, out_html
 
@@ -451,7 +469,7 @@ def ui_set(tab1, tab2):
         elms[tab1][tab2]['delete'] = gr.Button("Delete")
         elms[tab1][tab2]['download'] = gr.Button("Download")
     with gr.Row():
-        elms[tab1][tab2]['table'] = gr.HTML()
+        elms[tab1][tab2]['table'] = gr.HTML("Please push Reload button.")
     with gr.Row():
         elms[tab1][tab2]['files'] = gr.Files(interactive=True)
 
@@ -552,6 +570,7 @@ def on_ui_tabs():
             out_html = gr.HTML(check_backup_dir())
         with gr.Tabs() as tabs:
             with gr.TabItem("Checkpoints"):
+                ui_dir("Checkpoints")
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
                         ui_set("Checkpoints", "Active")
@@ -560,12 +579,14 @@ def on_ui_tabs():
                     with gr.TabItem("Download"):
                         ui_set("Checkpoints", "Download")
             with gr.TabItem("Dreambooths"):
+                ui_dir("Dreambooths")
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
                         ui_set("Dreambooths", "Active")
                     with gr.TabItem("Backup"):
                         ui_set("Dreambooths", "Backup")
             with gr.TabItem("Loras"):
+                ui_dir("Loras")
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
                         ui_set("Loras", "Active")
@@ -574,6 +595,7 @@ def on_ui_tabs():
                     with gr.TabItem("Download"):
                         ui_set("Loras", "Download")
             with gr.TabItem("Hypernetworks"):
+                ui_dir("Hypernetworks")
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
                         ui_set("Hypernetworks", "Active")
@@ -582,6 +604,7 @@ def on_ui_tabs():
                     with gr.TabItem("Download"):
                         ui_set("Hypernetworks", "Download")
             with gr.TabItem("Extensions"):
+                ui_dir("Extensions")
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
                         ui_set("Extensions", "Active")
@@ -595,7 +618,7 @@ def on_ui_tabs():
                         ui_set("Images", "Backup")
             with gr.TabItem("Files"):
                 files_reload = gr.Button("Reload")
-                files_table = gr.HTML()
+                files_table = gr.HTML("Please push Reload button.")
                 files_title = gr.Text(elem_id=f"files_title", visible=False).style(container=False)
                 files_load = gr.Button(elem_id=f"load_files_button", visible=False).style(container=False)
                 files_download = gr.Button(elem_id=f"download_files_button", visible=False).style(container=False)
@@ -633,8 +656,14 @@ def on_ui_tabs():
         apply_settings.click(
             fn=save_settings,
             inputs=settings,
-            outputs=[out_html],
-        )
+            outputs=[
+                out_html,
+                elms['Checkpoints']['backup_dir'],
+                elms['Dreambooths']['backup_dir'],
+                elms['Loras']['backup_dir'],
+                elms['Hypernetworks']['backup_dir'],
+                elms['Extensions']['backup_dir'],
+                ])
 
     return (filer, "Filer", "filer"),
 

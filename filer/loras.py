@@ -6,7 +6,7 @@ from . import models as filer_models
 from . import actions as filer_actions
 
 def load_active_dir():
-    return "models/lora"
+    return os.path.abspath("models/lora")
 
 def get_list(dir):
     data = filer_models.load_comment('loras')
