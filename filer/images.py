@@ -14,6 +14,10 @@ class FilerGroupImages(FilerGroupBase):
     upload_zip = True
 
     @classmethod
+    def get_active_dir(cls):
+        return os.path.abspath(".")
+
+    @classmethod
     def _get_list(cls, dirs):
         data = filer_models.load_comment(cls.name)
         

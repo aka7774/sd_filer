@@ -33,6 +33,7 @@ def save_settings(*input_settings):
         filer_models.load_backup_dir('loras'),
         filer_models.load_backup_dir('hypernetworks'),
         filer_models.load_backup_dir('extensions'),
+        filer_models.load_backup_dir('images'),
         ]
 
 elms = {}
@@ -235,6 +236,7 @@ def on_ui_tabs():
                     with gr.TabItem("Backup"):
                         ui_set("Extensions", "Backup")
             with gr.TabItem("Images"):
+                ui_dir("Images")
                 with gr.Tabs() as tabs:
                     with gr.TabItem("Active"):
                         ui_set("Images", "Active")
@@ -287,6 +289,7 @@ def on_ui_tabs():
                 elms['Loras']['backup_dir'],
                 elms['Hypernetworks']['backup_dir'],
                 elms['Extensions']['backup_dir'],
+                elms['Images']['backup_dir'],
                 ])
 
     return (filer, "Filer", "filer"),
