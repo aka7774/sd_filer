@@ -5,130 +5,149 @@ import torch
 from safetensors.torch import save_file
 
 from modules import sd_models
+from .base import FilerGroupBase
 from . import models as filer_models
 from . import actions as filer_actions
 
-def load_active_dir():
-    for c in sd_models.checkpoints_list.values():
-        return os.path.dirname(c.filename)
+class FilerGroupCheckpoints(FilerGroupBase):
+    name = 'checkpoints'
 
-def get_list(dir):
-    data = filer_models.load_comment('checkpoints')
-    rs = []
-    for filename in os.listdir(dir):
-        if not filename.endswith('.ckpt') and not filename.endswith('.safetensors') and not filename.endswith('.vae.pt'):
-            continue
+    @classmethod
+    def get_active_dir(cls):
+        for c in sd_models.checkpoints_list.values():
+            return os.path.dirname(c.filename)
 
-        d = data[filename] if filename in data else {}
+    @classmethod
+    def _get_list(cls, dir):
+        data = filer_models.load_comment(cls.name)
+        rs = []
+        for filename in os.listdir(dir):
+            if not filename.endswith('.ckpt') and not filename.endswith('.safetensors') and not filename.endswith('.vae.pt'):
+                continue
 
-        r = {}
-        r['title'] = filename
-        r['filename'] = filename
-        r['filepath'] = os.path.join(dir, filename)
-        r['hash'] = sd_models.model_hash(r['filepath'])
-        r['sha256_path'] = r['filepath'] + '.sha256'
-        r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
-        r['vae_path'] = os.path.splitext(r['filepath'])[0] + '.vae.pt'
-        r['vae'] = 'Y' if os.path.exists(r['vae_path']) else ''
-        r['yaml_path'] = os.path.splitext(r['filepath'])[0] + '.yaml'
-        r['yaml'] = 'Y' if os.path.exists(r['yaml_path']) else ''
-        r['genre'] = d['genre'] if 'genre' in d else ''
-        r['comment'] = d['comment'] if 'comment' in d else ''
+            d = data[filename] if filename in data else {}
 
-        rs.append(r)
+            r = {}
+            r['title'] = filename
+            r['filename'] = filename
+            r['filepath'] = os.path.join(dir, filename)
+            r['hash'] = sd_models.model_hash(r['filepath'])
+            r['sha256_path'] = r['filepath'] + '.sha256'
+            r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
+            r['vae_path'] = os.path.splitext(r['filepath'])[0] + '.vae.pt'
+            r['vae'] = 'Y' if os.path.exists(r['vae_path']) else ''
+            r['yaml_path'] = os.path.splitext(r['filepath'])[0] + '.yaml'
+            r['yaml'] = 'Y' if os.path.exists(r['yaml_path']) else ''
+            r['genre'] = d['genre'] if 'genre' in d else ''
+            r['comment'] = d['comment'] if 'comment' in d else ''
 
-    return rs
+            rs.append(r)
 
-def list_active():
-    return get_list(load_active_dir())
+        return rs
 
-def list_backup():
-    backup_dir = filer_models.load_backup_dir('checkpoints')
-    if not backup_dir or not os.path.exists(backup_dir):
-        return []
-    return get_list(backup_dir)
+    @classmethod
+    def make_yaml(cls, filenames, list):
+        y = {}
+        for r in list:
+            if r['filename'] not in filenames.split(','):
+                continue
 
-def make_yaml(filenames, list):
-    y = {}
-    for r in list:
-        if r['filename'] not in filenames.split(','):
-            continue
+            y[r['filename']] = {
+                'description': r['title'],
+                'weights': r['filepath'],
+                'config': 'configs/stable-diffusion/v1-inference.yaml',
+                'width': 512,
+                'height': 512,
+            }
+            # 1111のデフォルトのconfig値は使わない
+            if os.path.exists(r['yaml_path']):
+                y[r['filename']]['config'] = r['yaml_path']
+            if os.path.exists(r['vae_path']):
+                y[r['filename']]['vae'] = r['vae_path']
 
-        y[r['filename']] = {
-            'description': r['title'],
-            'weights': r['filepath'],
-            'config': 'configs/stable-diffusion/v1-inference.yaml',
-            'width': 512,
-            'height': 512,
-        }
-        # 1111のデフォルトのconfig値は使わない
-        if os.path.exists(r['yaml_path']):
-            y[r['filename']]['config'] = r['yaml_path']
-        if os.path.exists(r['vae_path']):
-            y[r['filename']]['vae'] = r['vae_path']
+        return yaml.dump(y)
 
-    return yaml.dump(y)
+    @classmethod
+    def convert_safetensors(cls, filenames, list):
+        for r in list:
+            if r['filename'] not in filenames.split(','):
+                continue
+            if not r['filename'].endswith('.ckpt'):
+                continue
 
-def convert_safetensors(filenames, list):
-    for r in list:
-        if r['filename'] not in filenames.split(','):
-            continue
-        if not r['filename'].endswith('.ckpt'):
-            continue
+            dst_path = os.path.splitext(r['filepath'])[0] + '.safetensors'
 
-        dst_path = os.path.splitext(r['filepath'])[0] + '.safetensors'
-
-        with torch.no_grad():
-            weights = torch.load(r['filepath'])["state_dict"]
-            save_file(weights, dst_path)
-            print(f"{dst_path} saved.")
-    return "converted."
+            with torch.no_grad():
+                weights = torch.load(r['filepath'])["state_dict"]
+                save_file(weights, dst_path)
+                print(f"{dst_path} saved.")
+        return "converted."
     
-def urls(urls):
-    return filer_actions.urls(urls, load_active_dir())
+    @classmethod
+    def make_active(cls, filenames):
+        html = '<pre>' + cls.make_yaml(filenames, cls.list_active()) + '</pre>'
+        return html
 
-def table(name, rs):
-    code = f"""
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>Filename</th>
-                <th>hash</th>
-                <th>sha256</th>
-                <th>vae.pt</th>
-                <th>yaml</th>
-                <th>Genre</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
+    @classmethod
+    def make_backup(cls, filenames):
+        html = '<pre>' + cls.make_yaml(filenames, cls.list_backup()) + '</pre>'
+        return html
 
-    for r in rs:
-        op_html = ''
-        for op in ['Default', 'Merged', 'Dreambooth', 'DreamArtist']:
-            if op == r['genre']:
-                op_html += '<option selected>' + op
-            else:
-                op_html += '<option>' + op
+    @classmethod
+    def convert_active(cls, filenames):
+        cls.convert_safetensors(filenames, cls.list_active())
+        return cls.table_active()
 
-        code += f"""
-            <tr class="filer_{name}_row" data-title="{r['title']}">
-                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                <td class="filer_filename">{r['filename']}</td>
-                <td class="filer_hash">{r['hash']}</td>
-                <td class="filer_sha256">{r['sha256']}</td>
-                <td class="filer_vae">{r['vae']}</td>
-                <td class="filer_yaml">{r['yaml']}</td>
-                <td><select class="filer_genre">{op_html}</select></td>
-                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
-            </tr>
-            """
+    @classmethod
+    def convert_backup(cls, filenames):
+        cls.convert_safetensors(filenames, cls.list_backup())
+        return cls.table_backup()
 
-    code += """
-        </tbody>
-    </table>
-    """
+    @classmethod
+    def _table(cls, name, rs):
+        name = f"{cls.name}_{name}"
 
-    return code
+        code = f"""
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Filename</th>
+                    <th>hash</th>
+                    <th>sha256</th>
+                    <th>vae.pt</th>
+                    <th>yaml</th>
+                    <th>Genre</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+
+        for r in rs:
+            op_html = ''
+            for op in ['Default', 'Converted', 'Merged', 'MBW', 'MBW Each', 'Dreambooth', 'DreamArtist']:
+                if op == r['genre']:
+                    op_html += '<option selected>' + op
+                else:
+                    op_html += '<option>' + op
+
+            code += f"""
+                <tr class="filer_{name}_row" data-title="{r['title']}">
+                    <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                    <td class="filer_filename">{r['filename']}</td>
+                    <td class="filer_hash">{r['hash']}</td>
+                    <td class="filer_sha256">{r['sha256']}</td>
+                    <td class="filer_vae">{r['vae']}</td>
+                    <td class="filer_yaml">{r['yaml']}</td>
+                    <td><select class="filer_genre">{op_html}</select></td>
+                    <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+                </tr>
+                """
+
+        code += """
+            </tbody>
+        </table>
+        """
+
+        return code

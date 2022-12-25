@@ -2,65 +2,65 @@ import os
 import pathlib
 
 from modules import sd_models
+from .base import FilerGroupBase
 from . import models as filer_models
 
-def load_active_dir():
-    return os.path.abspath("models/dreambooth")
+class FilerGroupDreambooths(FilerGroupBase):
+    name = 'dreambooths'
+    upload_zip = True
 
-def get_list(dir):
-    data = filer_models.load_comment('dreambooths')
-    rs = []
-    for filename in os.listdir(dir):
-        # ファイルは対象外
-        if not os.path.isdir(os.path.join(dir, filename)):
-            continue
+    @classmethod
+    def get_active_dir(cls):
+        return os.path.abspath("models/dreambooth")
 
-        d = data[filename] if filename in data else {}
+    @classmethod
+    def _get_list(cls, dir):
+        data = filer_models.load_comment(cls.name)
+        rs = []
+        for filename in os.listdir(dir):
+            # ファイルは対象外
+            if not os.path.isdir(os.path.join(dir, filename)):
+                continue
 
-        r = {}
-        r['title'] = filename
-        r['filename'] = filename
-        r['filepath'] = os.path.join(dir, filename)
-        r['comment'] = d['comment'] if 'comment' in d else ''
+            d = data[filename] if filename in data else {}
 
-        rs.append(r)
+            r = {}
+            r['title'] = filename
+            r['filename'] = filename
+            r['filepath'] = os.path.join(dir, filename)
+            r['comment'] = d['comment'] if 'comment' in d else ''
 
-    return rs
+            rs.append(r)
 
-def list_active():
-    return get_list(load_active_dir())
+        return rs
 
-def list_backup():
-    backup_dir = filer_models.load_backup_dir('dreambooths')
-    if not backup_dir or not os.path.exists(backup_dir):
-        return []
-    return get_list(backup_dir)
+    @classmethod
+    def _table(cls, name, rs):
+        name = f"{cls.name}_{name}"
+        code = f"""
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>name</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
 
-def table(name, rs):
-    code = f"""
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>name</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
+        for r in rs:
+            code += f"""
+                <tr class="filer_{name}_row" data-title="{r['title']}">
+                    <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
+                    <td class="filer_filename">{r['filename']}</td>
+                    <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+                </tr>
+                """
 
-    for r in rs:
-        code += f"""
-            <tr class="filer_{name}_row" data-title="{r['title']}">
-                <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                <td class="filer_filename">{r['filename']}</td>
-                <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
-            </tr>
-            """
+        code += """
+            </tbody>
+        </table>
+        """
 
-    code += """
-        </tbody>
-    </table>
-    """
-
-    return code
+        return code

@@ -7,416 +7,16 @@ import gradio as gr
 from modules import script_callbacks, sd_models, shared
 import filer.models as filer_models
 import filer.actions as filer_actions
-import filer.checkpoints as filer_checkpoints
-import filer.hypernetworks as filer_hypernetworks
-import filer.extensions as filer_extensions
-import filer.images as filer_images
-import filer.dreambooths as filer_dreambooths
-import filer.loras as filer_loras
-import filer.files as filer_files
+from filer.checkpoints import FilerGroupCheckpoints
+from filer.hypernetworks import FilerGroupHypernetworks
+from filer.extensions import FilerGroupExtensions
+from filer.images import FilerGroupImages
+from filer.dreambooths import FilerGroupDreambooths
+from filer.loras import FilerGroupLoras
+from filer.files import FilerGroupFiles
 
 def js_only():
     pass
-
-# copy begin
-def copy_checkpoints_active(filenames):
-    filer_actions.copy(filenames, filer_checkpoints.list_active(), filer_models.load_backup_dir('checkpoints'))
-    return table_checkpoints_active()
-
-def copy_checkpoints_backup(filenames):
-    filer_actions.copy(filenames, filer_checkpoints.list_backup(), filer_checkpoints.load_active_dir())
-    return table_checkpoints_backup()
-
-def move_checkpoints_active(filenames):
-    filer_actions.move(filenames, filer_checkpoints.list_active(), filer_models.load_backup_dir('checkpoints'))
-    return table_checkpoints_active()
-
-def move_checkpoints_backup(filenames):
-    filer_actions.move(filenames, filer_checkpoints.list_backup(), filer_checkpoints.load_active_dir())
-    return table_checkpoints_backup()
-
-def delete_checkpoints_active(filenames):
-    filer_actions.delete(filenames, filer_checkpoints.list_active())
-    return table_checkpoints_active()
-
-def delete_checkpoints_backup(filenames):
-    filer_actions.delete(filenames, filer_checkpoints.list_backup())
-    return table_checkpoints_backup()
-
-def calc_checkpoints_active(filenames):
-    filer_actions.calc_sha256(filenames, filer_checkpoints.list_active())
-    return table_checkpoints_active()
-
-def calc_checkpoints_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_checkpoints.list_backup())
-    return table_checkpoints_backup()
-
-def save_checkpoints(data):
-    filer_models.save_comment('checkpoints', data)
-    return 'saved.'
-
-def download_checkpoints_active(filenames):
-    return filer_actions.download(filenames, filer_checkpoints.list_active())
-
-def download_checkpoints_backup(filenames):
-    return filer_actions.download(filenames, filer_checkpoints.list_backup())
-
-def upload_checkpoints_active(files):
-    return filer_actions.upload(files, filer_checkpoints.load_active_dir())
-
-def upload_checkpoints_backup(files):
-    return filer_actions.upload(files, filer_models.load_backup_dir())
-
-def calc_checkpoints_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_checkpoints.list_backup())
-    return table_checkpoints_backup()
-
-def table_checkpoints_active():
-    return filer_checkpoints.table('checkpoints_active', filer_checkpoints.list_active())
-
-def table_checkpoints_backup():
-    return filer_checkpoints.table('checkpoints_backup', filer_checkpoints.list_backup())
-
-def reload_checkpoints_active():
-    return [table_checkpoints_active(), '']
-
-def reload_checkpoints_backup():
-    return [table_checkpoints_backup(), '']
-# copy end
-
-# paste
-def copy_hypernetworks_active(filenames):
-    filer_actions.copy(filenames, filer_hypernetworks.list_active(), filer_models.load_backup_dir('hypernetworks'))
-    return table_hypernetworks_active()
-
-def copy_hypernetworks_backup(filenames):
-    filer_actions.copy(filenames, filer_hypernetworks.list_backup(), filer_hypernetworks.load_active_dir())
-    return table_hypernetworks_backup()
-
-def move_hypernetworks_active(filenames):
-    filer_actions.move(filenames, filer_hypernetworks.list_active(), filer_models.load_backup_dir('hypernetworks'))
-    return table_hypernetworks_active()
-
-def move_hypernetworks_backup(filenames):
-    filer_actions.move(filenames, filer_hypernetworks.list_backup(), filer_hypernetworks.load_active_dir())
-    return table_hypernetworks_backup()
-
-def delete_hypernetworks_active(filenames):
-    filer_actions.delete(filenames, filer_hypernetworks.list_active())
-    return table_hypernetworks_active()
-
-def delete_hypernetworks_backup(filenames):
-    filer_actions.delete(filenames, filer_hypernetworks.list_backup())
-    return table_hypernetworks_backup()
-
-def download_hypernetworks_active(filenames):
-    return filer_actions.download(filenames, filer_hypernetworks.list_active())
-
-def download_hypernetworks_backup(filenames):
-    return filer_actions.download(filenames, filer_hypernetworks.list_backup())
-
-def upload_hypernetworks_active(files):
-    return filer_actions.upload(files, filer_hypernetworks.load_active_dir())
-
-def upload_hypernetworks_backup(files):
-    return filer_actions.upload(files, filer_models.load_backup_dir())
-
-def calc_hypernetworks_active(filenames):
-    filer_actions.calc_sha256(filenames, filer_hypernetworks.list_active())
-    return table_hypernetworks_active()
-
-def calc_hypernetworks_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_hypernetworks.list_backup())
-    return table_hypernetworks_backup()
-
-def save_hypernetworks(data):
-    filer_models.save_comment('hypernetworks', data)
-    return 'saved.'
-
-def table_hypernetworks_active():
-    return filer_hypernetworks.table('hypernetworks_active', filer_hypernetworks.list_active())
-
-def table_hypernetworks_backup():
-    return filer_hypernetworks.table('hypernetworks_backup', filer_hypernetworks.list_backup())
-
-def reload_hypernetworks_active():
-    return [table_hypernetworks_active(), '']
-
-def reload_hypernetworks_backup():
-    return [table_hypernetworks_backup(), '']
-#
-def copy_extensions_active(filenames):
-    filer_actions.copy(filenames, filer_extensions.list_active(), filer_models.load_backup_dir('extensions'))
-    return table_extensions_active()
-
-def copy_extensions_backup(filenames):
-    filer_actions.copy(filenames, filer_extensions.list_backup(), filer_extensions.load_active_dir())
-    return table_extensions_backup()
-
-def move_extensions_active(filenames):
-    filer_actions.move(filenames, filer_extensions.list_active(), filer_models.load_backup_dir('extensions'))
-    return table_extensions_active()
-
-def move_extensions_backup(filenames):
-    filer_actions.move(filenames, filer_extensions.list_backup(), filer_extensions.load_active_dir())
-    return table_extensions_backup()
-
-def delete_extensions_active(filenames):
-    filer_actions.delete(filenames, filer_extensions.list_active())
-    return table_extensions_active()
-
-def delete_extensions_backup(filenames):
-    filer_actions.delete(filenames, filer_extensions.list_backup())
-    return table_extensions_backup()
-
-def download_extensions_active(filenames):
-    return filer_actions.download(filenames, filer_extensions.list_active())
-
-def download_extensions_backup(filenames):
-    return filer_actions.download(filenames, filer_extensions.list_backup())
-
-def upload_extensions_active(files):
-    return filer_actions.upload(files, filer_extensions.load_active_dir(), True)
-
-def upload_extensions_backup(files):
-    return filer_actions.upload(files, filer_models.load_backup_dir(), True)
-
-def calc_extensions_active(filenames):
-    filer_actions.calc_sha256(filenames, filer_extensions.list_active())
-    return table_extensions_active()
-
-def calc_extensions_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_extensions.list_backup())
-    return table_extensions_backup()
-
-def save_extensions(data):
-    filer_models.save_comment('extensions', data)
-    return 'saved.'
-
-def table_extensions_active():
-    return filer_extensions.table('extensions_active', filer_extensions.list_active())
-
-def table_extensions_backup():
-    return filer_extensions.table('extensions_backup', filer_extensions.list_backup())
-
-def reload_extensions_active():
-    return [table_extensions_active(), '']
-
-def reload_extensions_backup():
-    return [table_extensions_backup(), '']
-#
-def copy_images_active(filenames):
-    filer_actions.copy(filenames, filer_images.list_active(), filer_models.load_backup_dir('images'))
-    return table_images_active()
-
-def copy_images_backup(filenames):
-    filer_actions.copy(filenames, filer_images.list_backup(), filer_images.load_active_dir())
-    return table_images_backup()
-
-def move_images_active(filenames):
-    filer_actions.move(filenames, filer_images.list_active(), filer_models.load_backup_dir('images'))
-    return table_images_active()
-
-def move_images_backup(filenames):
-    filer_actions.move(filenames, filer_images.list_backup(), filer_images.load_active_dir())
-    return table_images_backup()
-
-def delete_images_active(filenames):
-    filer_actions.delete(filenames, filer_images.list_active())
-    return table_images_active()
-
-def delete_images_backup(filenames):
-    filer_actions.delete(filenames, filer_images.list_backup())
-    return table_images_backup()
-
-def download_images_active(filenames):
-    return filer_actions.download(filenames, filer_images.list_active())
-
-def download_images_backup(filenames):
-    return filer_actions.download(filenames, filer_images.list_backup())
-
-def upload_images_active(files):
-    return filer_actions.upload(files, filer_images.load_active_dir(), True)
-
-def upload_images_backup(files):
-    return filer_actions.upload(files, filer_models.load_backup_dir(), True)
-
-def calc_images_active(filenames):
-    filer_actions.calc_sha256(filenames, filer_images.list_active())
-    return table_images_active()
-
-def calc_images_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_images.list_backup())
-    return table_images_backup()
-
-def save_images(data):
-    filer_models.save_comment('images', data)
-    return 'saved.'
-
-def table_images_active():
-    return filer_images.table('images_active', filer_images.list_active())
-
-def table_images_backup():
-    return filer_images.table('images_backup', filer_images.list_backup())
-
-def reload_images_active():
-    return [table_images_active(), '']
-
-def reload_images_backup():
-    return [table_images_backup(), '']
-#
-def copy_dreambooths_active(filenames):
-    filer_actions.copy(filenames, filer_dreambooths.list_active(), filer_models.load_backup_dir('dreambooths'))
-    return table_dreambooths_active()
-
-def copy_dreambooths_backup(filenames):
-    filer_actions.copy(filenames, filer_dreambooths.list_backup(), filer_dreambooths.load_active_dir())
-    return table_dreambooths_backup()
-
-def move_dreambooths_active(filenames):
-    filer_actions.move(filenames, filer_dreambooths.list_active(), filer_models.load_backup_dir('dreambooths'))
-    return table_dreambooths_active()
-
-def move_dreambooths_backup(filenames):
-    filer_actions.move(filenames, filer_dreambooths.list_backup(), filer_dreambooths.load_active_dir())
-    return table_dreambooths_backup()
-
-def delete_dreambooths_active(filenames):
-    filer_actions.delete(filenames, filer_dreambooths.list_active())
-    return table_dreambooths_active()
-
-def delete_dreambooths_backup(filenames):
-    filer_actions.delete(filenames, filer_dreambooths.list_backup())
-    return table_dreambooths_backup()
-
-def calc_dreambooths_active(filenames):
-    filer_actions.calc_sha256(filenames, filer_dreambooths.list_active())
-    return table_dreambooths_active()
-
-def calc_dreambooths_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_dreambooths.list_backup())
-    return table_dreambooths_backup()
-
-def save_dreambooths(data):
-    filer_models.save_comment('dreambooths', data)
-    return 'saved.'
-
-def download_dreambooths_active(filenames):
-    return filer_actions.download(filenames, filer_dreambooths.list_active())
-
-def download_dreambooths_backup(filenames):
-    return filer_actions.download(filenames, filer_dreambooths.list_backup())
-
-def upload_dreambooths_active(files):
-    return filer_actions.upload(files, filer_dreambooths.load_active_dir(), True)
-
-def upload_dreambooths_backup(files):
-    return filer_actions.upload(files, filer_models.load_backup_dir(), True)
-
-def calc_dreambooths_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_dreambooths.list_backup())
-    return table_dreambooths_backup()
-
-def table_dreambooths_active():
-    return filer_dreambooths.table('dreambooths_active', filer_dreambooths.list_active())
-
-def table_dreambooths_backup():
-    return filer_dreambooths.table('dreambooths_backup', filer_dreambooths.list_backup())
-
-def reload_dreambooths_active():
-    return [table_dreambooths_active(), '']
-
-def reload_dreambooths_backup():
-    return [table_dreambooths_backup(), '']
-#
-def copy_loras_active(filenames):
-    filer_actions.copy(filenames, filer_loras.list_active(), filer_models.load_backup_dir('loras'))
-    return table_loras_active()
-
-def copy_loras_backup(filenames):
-    filer_actions.copy(filenames, filer_loras.list_backup(), filer_loras.load_active_dir())
-    return table_loras_backup()
-
-def move_loras_active(filenames):
-    filer_actions.move(filenames, filer_loras.list_active(), filer_models.load_backup_dir('loras'))
-    return table_loras_active()
-
-def move_loras_backup(filenames):
-    filer_actions.move(filenames, filer_loras.list_backup(), filer_loras.load_active_dir())
-    return table_loras_backup()
-
-def delete_loras_active(filenames):
-    filer_actions.delete(filenames, filer_loras.list_active())
-    return table_loras_active()
-
-def delete_loras_backup(filenames):
-    filer_actions.delete(filenames, filer_loras.list_backup())
-    return table_loras_backup()
-
-def calc_loras_active(filenames):
-    filer_actions.calc_sha256(filenames, filer_loras.list_active())
-    return table_loras_active()
-
-def calc_loras_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_loras.list_backup())
-    return table_loras_backup()
-
-def save_loras(data):
-    filer_models.save_comment('loras', data)
-    return 'saved.'
-
-def download_loras_active(filenames):
-    return filer_actions.download(filenames, filer_loras.list_active())
-
-def download_loras_backup(filenames):
-    return filer_actions.download(filenames, filer_loras.list_backup())
-
-def upload_loras_active(files):
-    return filer_actions.upload(files, filer_loras.load_active_dir())
-
-def upload_loras_backup(files):
-    return filer_actions.upload(files, filer_models.load_backup_dir('loras'))
-
-def calc_loras_backup(filenames):
-    filer_actions.calc_sha256(filenames, filer_loras.list_backup())
-    return table_loras_backup()
-
-def table_loras_active():
-    return filer_loras.table('loras_active', filer_loras.list_active())
-
-def table_loras_backup():
-    return filer_loras.table('loras_backup', filer_loras.list_backup())
-
-def reload_loras_active():
-    return [table_loras_active(), '']
-
-def reload_loras_backup():
-    return [table_loras_backup(), '']
-# paste end
-
-def state_hypernetworks_active(title):
-    html = title + '<br><pre>' + pprint.pformat(filer_hypernetworks.state('active', title)) + '</pre>'
-    return html
-
-def state_hypernetworks_backup(title):
-    html = title + '<br><pre>' + pprint.pformat(filer_hypernetworks.state('backup', title)) + '</pre>'
-    return html
-
-def make_checkpoints_active(filenames):
-    html = '<pre>' + filer_checkpoints.make_yaml(filenames, filer_checkpoints.list_active()) + '</pre>'
-    return html
-
-def make_checkpoints_backup(filenames):
-    html = '<pre>' + filer_checkpoints.make_yaml(filenames, filer_checkpoints.list_backup()) + '</pre>'
-    return html
-
-def convert_checkpoints_active(filenames):
-    filer_checkpoints.convert_safetensors(filenames, filer_checkpoints.list_active())
-    return table_checkpoints_active()
-
-def convert_checkpoints_backup(filenames):
-    filer_checkpoints.convert_safetensors(filenames, filer_checkpoints.list_backup())
-    return table_checkpoints_backup()
 
 def check_backup_dir():
     settings = filer_models.load_settings()
@@ -424,18 +24,6 @@ def check_backup_dir():
     if not settings['backup_dir']:
         html = 'First open the Settings tab and enter the backup directory'
     return html
-
-def urls_checkpoints(urls):
-    filer_checkpoints.urls(urls)
-    return 'Downloaded.'
-
-def urls_hypernetworks(urls):
-    filer_hypernetworks.urls(urls)
-    return 'Downloaded.'
-
-def urls_loras(urls):
-    filer_loras.urls(urls)
-    return 'Downloaded.'
 
 def save_settings(*input_settings):
     return [
@@ -456,7 +44,7 @@ def ui_dir(tab1):
         elms[tab1] = {}
 
     with gr.Row():
-        elms[tab1]['active_dir'] = gr.Textbox(value=globals()[f"filer_{tab1.lower()}"].load_active_dir(), label="Active Dir", interactive=False)
+        elms[tab1]['active_dir'] = gr.Textbox(value=globals()[f"FilerGroup{tab1}"].get_active_dir(), label="Active Dir", interactive=False)
         elms[tab1]['backup_dir'] = gr.Textbox(value=filer_models.load_backup_dir(tab1.lower()),label="Backup Dir", interactive=False)
 
 def ui_set(tab1, tab2):
@@ -475,7 +63,7 @@ def ui_set(tab1, tab2):
         )
         elms[tab1][tab2]['download'] = gr.Button("Download")
         elms[tab1][tab2]['download'].click(
-            fn=globals()[f"urls_{tab1.lower()}"],
+            fn=globals()[f"FilerGroup{tab1}"].download_urls,
             inputs=[elms[tab1][tab2]['urls']],
 #            outputs=[elms[tab1][tab2]['table']],
             outputs=[out_html],
@@ -510,48 +98,48 @@ def ui_set(tab1, tab2):
         elms[tab1][tab2]['files'] = gr.Files(interactive=True)
 
     elms[tab1][tab2]['save'].click(
-        fn=globals()[f"save_{tab1.lower()}"],
+        fn=globals()[f"FilerGroup{tab1}"].save_comment,
         _js=f"save_{tab1.lower()}_{tab2.lower()}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[out_html],
     )
 
     elms[tab1][tab2]['download'].click(
-        fn=globals()[f"download_{tab1.lower()}_{tab2.lower()}"],
+        fn=getattr(globals()[f"FilerGroup{tab1}"], f"download_{tab2.lower()}"),
         _js=f"rows_{tab1.lower()}_{tab2.lower()}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[elms[tab1][tab2]['files']],
     )
 
     elms[tab1][tab2]['files'].upload(
-        fn=globals()[f"upload_{tab1.lower()}_{tab2.lower()}"],
+        fn=getattr(globals()[f"FilerGroup{tab1}"], f"upload_{tab2.lower()}"),
         inputs=[elms[tab1][tab2]['files']],
         outputs=[elms[tab1][tab2]['table']],
     )
 
     if tab1 in ['Checkpoints', 'Hypernetworks'] and tab2 == 'Active':
         elms[tab1][tab2]['reload'].click(
-            fn=globals()[f"reload_{tab1.lower()}_{tab2.lower()}"],
+            fn=getattr(globals()[f"FilerGroup{tab1}"], f"reload_{tab2.lower()}"),
             _js=f"reload_{tab1.lower()}",
             inputs=[],
             outputs=[elms[tab1][tab2]['table']],
         )
     else:
         elms[tab1][tab2]['reload'].click(
-            fn=globals()[f"reload_{tab1.lower()}_{tab2.lower()}"],
+            fn=getattr(globals()[f"FilerGroup{tab1}"], f"reload_{tab2.lower()}"),
             inputs=[],
             outputs=[elms[tab1][tab2]['table'], elms[tab1][tab2]['selected']],
         )
 
     if tab1 == 'Checkpoints':
         elms[tab1][tab2]['invokeai'].click(
-            fn=globals()[f"make_{tab1.lower()}_{tab2.lower()}"],
+            fn=getattr(globals()[f"FilerGroup{tab1}"], f"make_{tab2.lower()}"),
             _js=f"rows_{tab1.lower()}_{tab2.lower()}",
             inputs=[elms[tab1][tab2]['selected']],
             outputs=[elms[tab1][tab2]['table']],
         )
         elms[tab1][tab2]['safetensors'].click(
-            fn=globals()[f"convert_{tab1.lower()}_{tab2.lower()}"],
+            fn=getattr(globals()[f"FilerGroup{tab1}"], f"convert_{tab2.lower()}"),
             _js=f"rows_{tab1.lower()}_{tab2.lower()}",
             inputs=[elms[tab1][tab2]['selected']],
             outputs=[elms[tab1][tab2]['table']],
@@ -559,7 +147,7 @@ def ui_set(tab1, tab2):
 
     if tab1 in ['Checkpoints', 'Hypernetworks', 'Loras']:
         elms[tab1][tab2]['calc_sha256'].click(
-            fn=globals()[f"calc_{tab1.lower()}_{tab2.lower()}"],
+            fn=getattr(globals()[f"FilerGroup{tab1}"], f"calc_{tab2.lower()}"),
             _js=f"rows_{tab1.lower()}_{tab2.lower()}",
             inputs=[elms[tab1][tab2]['selected']],
             outputs=[elms[tab1][tab2]['table']],
@@ -569,27 +157,27 @@ def ui_set(tab1, tab2):
         elms[tab1][tab2]['title'] = gr.Text(elem_id=f"{tab1.lower()}_{tab2.lower()}_title", visible=False).style(container=False)
         elms[tab1][tab2]['state'] = gr.Button(elem_id=f"state_{tab1.lower()}_{tab2.lower()}_button", visible=False).style(container=False)
         elms[tab1][tab2]['state'].click(
-            fn=globals()[f"state_{tab1.lower()}_{tab2.lower()}"],
+            fn=getattr(globals()[f"FilerGroup{tab1}"], f"state_{tab2.lower()}"),
             inputs=[elms[tab1][tab2]['title']],
             outputs=[out_html],
         )
 
     elms[tab1][tab2]['copy'].click(
-        fn=globals()[f"copy_{tab1.lower()}_{tab2.lower()}"],
+        fn=getattr(globals()[f"FilerGroup{tab1}"], f"copy_{tab2.lower()}"),
         _js=f"rows_{tab1.lower()}_{tab2.lower()}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[elms[tab1][tab2]['table']],
     )
 
     elms[tab1][tab2]['move'].click(
-        fn=globals()[f"move_{tab1.lower()}_{tab2.lower()}"],
+        fn=getattr(globals()[f"FilerGroup{tab1}"], f"move_{tab2.lower()}"),
         _js=f"rows_{tab1.lower()}_{tab2.lower()}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[elms[tab1][tab2]['table']],
     )
 
     elms[tab1][tab2]['delete'].click(
-        fn=globals()[f"delete_{tab1.lower()}_{tab2.lower()}"],
+        fn=getattr(globals()[f"FilerGroup{tab1}"], f"delete_{tab2.lower()}"),
         _js=f"rows_{tab1.lower()}_{tab2.lower()}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[elms[tab1][tab2]['table']],
@@ -662,22 +250,22 @@ def on_ui_tabs():
                 files_save = gr.Button("Save")
                 files_files = gr.Files(interactive=False)
                 files_reload.click(
-                    fn=filer_files.table,
+                    fn=FilerGroupFiles._table,
                     inputs=[],
                     outputs=[files_table],
                     )
                 files_load.click(
-                    fn=filer_files.load,
+                    fn=FilerGroupFiles.load,
                     inputs=[files_title],
                     outputs=[files_edit],
                     )
                 files_save.click(
-                    fn=filer_files.save,
+                    fn=FilerGroupFiles.save,
                     inputs=[files_title, files_edit],
                     outputs=[out_html],
                     )
                 files_download.click(
-                    fn=filer_files.download,
+                    fn=FilerGroupFiles.download,
                     inputs=[files_title],
                     outputs=[files_files],
                     )
