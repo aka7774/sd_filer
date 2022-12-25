@@ -2,6 +2,7 @@ import os
 import pathlib
 import yaml
 import torch
+import pprint
 
 from modules import sd_models
 from modules.shared import opts, cmd_opts, state

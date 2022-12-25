@@ -57,11 +57,11 @@ def ui_set(tab1, tab2):
 
     if tab2 == 'Download':
         elms[tab1][tab2]['urls'] = gr.Textbox(
-            label='URLs',
+            label='URL per line',
             lines=10,
             interactive=True
         )
-        elms[tab1][tab2]['download'] = gr.Button("Download")
+        elms[tab1][tab2]['download'] = gr.Button("Download to Active Dir")
         elms[tab1][tab2]['download'].click(
             fn=globals()[f"FilerGroup{tab1}"].download_urls,
             inputs=[elms[tab1][tab2]['urls']],
