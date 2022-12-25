@@ -76,6 +76,12 @@ def table_checkpoints_active():
 
 def table_checkpoints_backup():
     return filer_checkpoints.table('checkpoints_backup', filer_checkpoints.list_backup())
+
+def reload_checkpoints_active():
+    return [table_checkpoints_active(), '']
+
+def reload_checkpoints_backup():
+    return [table_checkpoints_backup(), '']
 # copy end
 
 # paste
@@ -132,6 +138,12 @@ def table_hypernetworks_active():
 
 def table_hypernetworks_backup():
     return filer_hypernetworks.table('hypernetworks_backup', filer_hypernetworks.list_backup())
+
+def reload_hypernetworks_active():
+    return [table_hypernetworks_active(), '']
+
+def reload_hypernetworks_backup():
+    return [table_hypernetworks_backup(), '']
 #
 def copy_extensions_active(filenames):
     filer_actions.copy(filenames, filer_extensions.list_active(), filer_models.load_backup_dir('extensions'))
@@ -186,6 +198,12 @@ def table_extensions_active():
 
 def table_extensions_backup():
     return filer_extensions.table('extensions_backup', filer_extensions.list_backup())
+
+def reload_extensions_active():
+    return [table_extensions_active(), '']
+
+def reload_extensions_backup():
+    return [table_extensions_backup(), '']
 #
 def copy_images_active(filenames):
     filer_actions.copy(filenames, filer_images.list_active(), filer_models.load_backup_dir('images'))
@@ -240,6 +258,12 @@ def table_images_active():
 
 def table_images_backup():
     return filer_images.table('images_backup', filer_images.list_backup())
+
+def reload_images_active():
+    return [table_images_active(), '']
+
+def reload_images_backup():
+    return [table_images_backup(), '']
 #
 def copy_dreambooths_active(filenames):
     filer_actions.copy(filenames, filer_dreambooths.list_active(), filer_models.load_backup_dir('dreambooths'))
@@ -298,6 +322,12 @@ def table_dreambooths_active():
 
 def table_dreambooths_backup():
     return filer_dreambooths.table('dreambooths_backup', filer_dreambooths.list_backup())
+
+def reload_dreambooths_active():
+    return [table_dreambooths_active(), '']
+
+def reload_dreambooths_backup():
+    return [table_dreambooths_backup(), '']
 #
 def copy_loras_active(filenames):
     filer_actions.copy(filenames, filer_loras.list_active(), filer_models.load_backup_dir('loras'))
@@ -356,6 +386,12 @@ def table_loras_active():
 
 def table_loras_backup():
     return filer_loras.table('loras_backup', filer_loras.list_backup())
+
+def reload_loras_active():
+    return [table_loras_active(), '']
+
+def reload_loras_backup():
+    return [table_loras_backup(), '']
 # paste end
 
 def state_hypernetworks_active(title):
@@ -495,16 +531,16 @@ def ui_set(tab1, tab2):
 
     if tab1 in ['Checkpoints', 'Hypernetworks'] and tab2 == 'Active':
         elms[tab1][tab2]['reload'].click(
-            fn=globals()[f"table_{tab1.lower()}_{tab2.lower()}"],
+            fn=globals()[f"reload_{tab1.lower()}_{tab2.lower()}"],
             _js=f"reload_{tab1.lower()}",
             inputs=[],
             outputs=[elms[tab1][tab2]['table']],
         )
     else:
         elms[tab1][tab2]['reload'].click(
-            fn=globals()[f"table_{tab1.lower()}_{tab2.lower()}"],
+            fn=globals()[f"reload_{tab1.lower()}_{tab2.lower()}"],
             inputs=[],
-            outputs=[elms[tab1][tab2]['table']],
+            outputs=[elms[tab1][tab2]['table'], elms[tab1][tab2]['selected']],
         )
 
     if tab1 == 'Checkpoints':
