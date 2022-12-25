@@ -6,6 +6,19 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 - 1111の入ったSSDとバックアップのHDDをやりとりするのに便利
 - クラウドの揮発ストレージと不揮発ストレージのやりとりにも便利
 
+![main](doc/main.png)
+
+# 機能概要
+
+- Active-Backup間のCopy/Move/Delete
+- ファイルのUpload/Download
+- URLからActiveへの外部ファイルのダウンロード
+- ckptからsafetensorsへの変換
+- ファイルの完全なsha256の計算(.sha256ファイルへの保存)
+- InvokeAI用のModels.yamlファイルの作成
+- Hypernetworksのstate_dict情報の確認
+- 一部ファイルの編集
+
 # At your own risk
 
 - Deleteボタンを押すと選択したファイルが消えます
@@ -17,14 +30,12 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 
 gradioの知識が足りなくてうまく実装できてない
 
-- ファイル操作でパーミッションエラーが出ることがある(恐らく直せません)
+- WindowsではExtensionsのファイル操作でパーミッションエラーが出る(直せません)
 - Reloadボタンなどがタイミングによってうまく動作しないことがあります(asyncの影響?)
 - ファイル操作をした後、選択したファイルの一覧とダウンロードするファイルの一覧が古いまま画面に残ります
 - ファイル操作の結果が画面でなくコンソールに出力されます
 - 進捗がわかりにくい(Loading...が出てるか消えたかくらい)
-- コードの一部に激しいコピペ部分があります(main.pyとfiler.js)
-
-リファクタリングのプルリクも歓迎
+- コードの一部に激しいコピペ部分があります(filer.js)
 
 ## UI機能は打ち止め
 
@@ -63,9 +74,7 @@ gradioの知識が足りなくてうまく実装できてない
 
 ## Reloadボタン
 
-- 最初にReloadを押さないと動きません
-- 最初から読み込むと1111の起動に時間がかかるのでどうしたものか
-  - タブ押したときに読み込むのは難しそう
+- 一覧を再読み込みします(最初にも押す必要があります)
 
 ## Save commentsボタン
 
