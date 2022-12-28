@@ -8,6 +8,9 @@ from . import models as filer_models
 files = [
     'config.json',
     'ui-config.json',
+    'styles.csv',
+    'webui-user.bat',
+    'webui-user.sh',
     os.path.join('extensions', 'stable-diffusion-webui-images-browser', 'path_recorder.txt'),
     os.path.join('extensions', 'sdweb-merge-block-weighted-gui', 'csv', 'history.tsv'),
     os.path.join('extensions', 'sdweb-merge-block-weighted-gui', 'csv', 'preset.tsv'),
@@ -40,7 +43,7 @@ class FilerGroupFiles(FilerGroupBase):
                 continue
             if not os.path.exists(filepath):
                 continue
-            with open(filepath, 'r') as f:
+            with open(filepath, 'r', encoding="utf-8") as f:
                 text = f.read()
             return text.encode().decode('unicode-escape')
         raise ValueError(f"{filename} not found.")
