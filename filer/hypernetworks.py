@@ -17,7 +17,7 @@ class FilerGroupHypernetworks(FilerGroupBase):
 
     @classmethod
     def get_active_dir(cls):
-        return cmd_opts.hypernetwork_dir
+        return os.path.abspath(cmd_opts.hypernetwork_dir)
 
     @classmethod
     def state(cls, tab2, filename):

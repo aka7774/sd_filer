@@ -4,7 +4,7 @@ import yaml
 import torch
 from safetensors.torch import save_file
 
-from modules import sd_models
+from modules import sd_models, shared
 from .base import FilerGroupBase
 from . import models as filer_models
 from . import actions as filer_actions
@@ -14,8 +14,7 @@ class FilerGroupCheckpoints(FilerGroupBase):
 
     @classmethod
     def get_active_dir(cls):
-        for c in sd_models.checkpoints_list.values():
-            return os.path.dirname(c.filename)
+        return shared.cmd_opts.ckpt_dir or sd_models.model_path
 
     @classmethod
     def _get_list(cls, dir):
