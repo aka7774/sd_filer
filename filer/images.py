@@ -18,10 +18,15 @@ class FilerGroupImages(FilerGroupBase):
         return os.path.abspath(".")
 
     @classmethod
-    def _get_list(cls, dirs):
+    def _get_list(cls, dirs, parent_dir = ''):
         data = filer_models.load_comment(cls.name)
         
-        p = pathlib.Path(__file__).parts[-3]
+        for dir in dirs:
+            for filedir, subdirs, filenames in os.walk(dir):
+                for subdir in subdirs:
+                    sub_path = os.path.join(filedir, subdir)
+                    if os.path.isdir(sub_path):
+                        dirs.append(sub_path)
 
         rs = []
         for filepath in dirs:
@@ -34,10 +39,10 @@ class FilerGroupImages(FilerGroupBase):
 
             d = data[filename] if filename in data else {}
 
-            r['title'] = filename
             r['filename'] = filename
             r['filepath'] = filepath
-            r['files'] = sum(os.path.isfile(os.path.join(filepath, name)) for name in os.listdir(filepath))
+            r['title'] = cls.get_rel_path(parent_dir, os.path.abspath(r['filepath']))
+            r['files'] = sum(os.path.isfile(os.path.join(r['filepath'], name)) for name in os.listdir(r['filepath']))
             r['comment'] = d['comment'] if 'comment' in d else ''
 
             rs.append(r)
@@ -62,7 +67,7 @@ class FilerGroupImages(FilerGroupBase):
             with open(paths) as f:
                 for line in f:
                     image_dirs.append(line.rstrip("\r\n"))
-        return cls._get_list(image_dirs)
+        return cls._get_list(image_dirs, cls.get_active_dir())
 
     @classmethod
     def list_backup(cls):
@@ -72,7 +77,7 @@ class FilerGroupImages(FilerGroupBase):
         dirs = []
         for dir in os.listdir(backup_dir):
             dirs.append(os.path.join(backup_dir, dir))
-        return cls._get_list(dirs)
+        return cls._get_list(dirs, backup_dir)
 
     @classmethod
     def list_append(cls, filename):
@@ -97,8 +102,7 @@ class FilerGroupImages(FilerGroupBase):
             <thead>
                 <tr>
                     <th></th>
-                    <th>name</th>
-                    <th>path</th>
+                    <th>Filepath</th>
                     <th>files</th>
                     <th>Comment</th>
                 </tr>
@@ -110,8 +114,7 @@ class FilerGroupImages(FilerGroupBase):
             code += f"""
                 <tr class="filer_{name}_row" data-title="{r['title']}">
                     <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                    <td class="filer_filename">{r['filename']}</td>
-                    <td class="filer_filepath">{r['filepath']}</td>
+                    <td class="filer_title">{r['title']}</td>
                     <td class="filer_files">{r['files']}</td>
                     <td>{r['comment']}</td>
                 </tr>
