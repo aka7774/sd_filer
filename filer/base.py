@@ -17,6 +17,22 @@ class FilerGroupBase:
         return ''
 
     @classmethod
+    def get_backup_dir(cls):
+        return filer_models.load_backup_dir(cls.name)
+
+    @classmethod
+    def get_dir(cls, tab2):
+        if tab2 == 'active':
+            return cls.get_active_dir()
+        elif tab2 == 'backup':
+            return cls.get_backup_dir()
+        return ''
+
+    @classmethod
+    def get_rel_path(cls, dir, path):
+        return path.replace(dir, '').replace(os.sep, '/').lstrip('/')
+
+    @classmethod
     def _get_list(cls, dir):
         pass
 
@@ -26,7 +42,7 @@ class FilerGroupBase:
 
     @classmethod
     def list_backup(cls):
-        backup_dir = filer_models.load_backup_dir(cls.name)
+        backup_dir = cls.get_backup_dir()
         if not backup_dir or not os.path.exists(backup_dir):
             return []
         return cls._get_list(backup_dir)
@@ -38,7 +54,7 @@ class FilerGroupBase:
 
     @classmethod
     def copy_active(cls, filenames):
-        filer_actions.copy(filenames, cls.list_active(), filer_models.load_backup_dir(cls.name))
+        filer_actions.copy(filenames, cls.list_active(), cls.get_backup_dir())
         return cls.table_active()
 
     @classmethod
@@ -48,7 +64,7 @@ class FilerGroupBase:
 
     @classmethod
     def move_active(cls, filenames):
-        filer_actions.move(filenames, cls.list_active(), filer_models.load_backup_dir(cls.name))
+        filer_actions.move(filenames, cls.list_active(), cls.get_backup_dir())
         return cls.table_active()
 
     @classmethod
@@ -95,7 +111,7 @@ class FilerGroupBase:
 
     @classmethod
     def upload_backup(cls, files):
-        return filer_actions.upload(files, filer_models.load_backup_dir(cls.name), cls.upload_zip)
+        return filer_actions.upload(files, cls.get_backup_dir(), cls.upload_zip)
 
     @classmethod
     def table_active(cls):

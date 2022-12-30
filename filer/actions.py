@@ -31,7 +31,7 @@ def calc_hash(algo, filepath):
 
 def calc_sha256(filenames, list):
     for r in list:
-        if r['filename'] not in filenames.split(','):
+        if r['title'] not in filenames.split(','):
             continue
 
         r['sha256'] = calc_hash('sha256', r['filepath'])
@@ -45,7 +45,7 @@ def copy(filenames, list, dst_dir):
         return
 
     for r in list:
-        if r['filename'] not in filenames.split(','):
+        if r['title'] not in filenames.split(','):
             continue
 
         dst_path = os.path.join(dst_dir, r['filename'])
@@ -72,7 +72,7 @@ def move(filenames, list, dst_dir):
         return
     
     for r in list:
-        if r['filename'] not in filenames.split(','):
+        if r['title'] not in filenames.split(','):
             continue
 
         dst_path = os.path.join(dst_dir, r['filename'])
@@ -92,7 +92,7 @@ def move(filenames, list, dst_dir):
 
 def delete(filenames, list):
     for r in list:
-        if r['filename'] not in filenames.split(','):
+        if r['title'] not in filenames.split(','):
             continue
 
         if not os.path.exists(r['filepath']):
@@ -114,7 +114,7 @@ def delete(filenames, list):
 def download(filenames, list):
     files = []
     for r in list:
-        if r['filename'] not in filenames.split(','):
+        if r['title'] not in filenames.split(','):
             continue
 
         if os.path.isdir(r['filepath']):

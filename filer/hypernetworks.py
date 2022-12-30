@@ -21,13 +21,11 @@ class FilerGroupHypernetworks(FilerGroupBase):
 
     @classmethod
     def state(cls, tab2, filename):
-        if tab2 == 'active':
-            filepath = os.path.join(cmd_opts.hypernetwork_dir, filename)
-        else:
-            backup_dir = filer_models.load_backup_dir()
-            if not backup_dir or not os.path.exists(backup_dir):
-                return {}
-            filepath = os.path.join(backup_dir, filename)
+        
+        filepath = os.path.join(cls.get_dir(tab2), filename)
+        
+        if not os.path.exists(filepath):
+            raise ValueError(f"Not found {filepath}")
 
         r = {}
         state_dict = torch.load(filepath, map_location='cpu')
@@ -61,34 +59,37 @@ class FilerGroupHypernetworks(FilerGroupBase):
         data = filer_models.load_comment(cls.name)
     
         rs = []
-        for filepath in hypernetwork.list_hypernetworks(dir).values():
-            r = {}
+        for filedir, subdirs, filenames in os.walk(dir):
+            for filename in filenames:
+                if not filename.endswith('.pt'):
+                    continue
 
-            filename = os.path.basename(filepath)
-            d = data[filename] if filename in data else {}
+                r = {}
 
-            r['title'] = filename
-            r['filename'] = filename
-            r['filepath'] = filepath
-            r['hash'] = sd_models.model_hash(r['filepath'])
-            r['sha256_path'] = r['filepath'] + '.sha256'
-            r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
-            r['model'] = d['model'] if 'model' in d else ''
-            r['comment'] = d['comment'] if 'comment' in d else ''
+                d = data[filename] if filename in data else {}
 
-            rs.append(r)
+                r['filename'] = filename
+                r['filepath'] = os.path.join(filedir, filename)
+                r['title'] = cls.get_rel_path(dir, r['filepath'])
+                r['hash'] = sd_models.model_hash(r['filepath'])
+                r['sha256_path'] = r['filepath'] + '.sha256'
+                r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
+                r['model'] = d['model'] if 'model' in d else ''
+                r['comment'] = d['comment'] if 'comment' in d else ''
+
+                rs.append(r)
 
         return rs
 
     @classmethod
-    def _table(cls, name, rs):
-        name = f"{cls.name}_{name}"
+    def _table(cls, tab2, rs):
+        name = f"{cls.name}_{tab2}"
         code = f"""
         <table>
             <thead>
                 <tr>
                     <th></th>
-                    <th>Filename</th>
+                    <th>Filepath</th>
                     <th>state</th>
                     <th>hash</th>
                     <th>sha256</th>
@@ -103,7 +104,7 @@ class FilerGroupHypernetworks(FilerGroupBase):
             code += f"""
                 <tr class="filer_{name}_row" data-title="{r['title']}">
                     <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
-                    <td class="filer_filename">{r['filename']}</td>
+                    <td class="filer_title">{r['title']}</td>
                     <td class="filer_state"><input onclick="state_{name}(this, '{r['title']}')" type="button" value="state" class="gr-button gr-button-lg gr-button-secondary"></td>
                     <td class="filer_hash">{r['hash']}</td>
                     <td class="filer_sha256">{r['sha256']}</td>
