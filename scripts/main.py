@@ -99,7 +99,7 @@ def ui_set(tab1, tab2):
 
     elms[tab1][tab2]['download'].click(
         fn=getattr(globals()[f"FilerGroup{tab1}"], f"download_{tab2.lower()}"),
-        _js=f"rows_{tab1.lower()}_{tab2.lower()}",
+        _js="function(){return rows('"+tab1.lower()+"_"+tab2.lower()+"')}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[elms[tab1][tab2]['files']],
     )
@@ -127,13 +127,13 @@ def ui_set(tab1, tab2):
     if tab1 == 'Checkpoints':
         elms[tab1][tab2]['invokeai'].click(
             fn=getattr(globals()[f"FilerGroup{tab1}"], f"make_{tab2.lower()}"),
-            _js=f"rows_{tab1.lower()}_{tab2.lower()}",
+            _js="function(){return rows('"+tab1.lower()+"_"+tab2.lower()+"')}",
             inputs=[elms[tab1][tab2]['selected']],
             outputs=[elms[tab1][tab2]['table']],
         )
         elms[tab1][tab2]['safetensors'].click(
             fn=getattr(globals()[f"FilerGroup{tab1}"], f"convert_{tab2.lower()}"),
-            _js=f"rows_{tab1.lower()}_{tab2.lower()}",
+            _js="function(){return rows('"+tab1.lower()+"_"+tab2.lower()+"')}",
             inputs=[elms[tab1][tab2]['selected']],
             outputs=[elms[tab1][tab2]['table']],
         )
@@ -141,7 +141,7 @@ def ui_set(tab1, tab2):
     if tab1 in ['Checkpoints', 'Hypernetworks', 'Loras']:
         elms[tab1][tab2]['calc_sha256'].click(
             fn=getattr(globals()[f"FilerGroup{tab1}"], f"calc_{tab2.lower()}"),
-            _js=f"rows_{tab1.lower()}_{tab2.lower()}",
+            _js="function(){return rows('"+tab1.lower()+"_"+tab2.lower()+"')}",
             inputs=[elms[tab1][tab2]['selected']],
             outputs=[elms[tab1][tab2]['table']],
         )
@@ -157,27 +157,27 @@ def ui_set(tab1, tab2):
 
     elms[tab1][tab2]['copy'].click(
         fn=getattr(globals()[f"FilerGroup{tab1}"], f"copy_{tab2.lower()}"),
-        _js=f"rows_{tab1.lower()}_{tab2.lower()}",
+        _js="function(){return rows('"+tab1.lower()+"_"+tab2.lower()+"')}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[elms[tab1][tab2]['table']],
     )
 
     elms[tab1][tab2]['move'].click(
         fn=getattr(globals()[f"FilerGroup{tab1}"], f"move_{tab2.lower()}"),
-        _js=f"rows_{tab1.lower()}_{tab2.lower()}",
+        _js="function(){return rows('"+tab1.lower()+"_"+tab2.lower()+"')}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[elms[tab1][tab2]['table']],
     )
 
     elms[tab1][tab2]['delete'].click(
         fn=getattr(globals()[f"FilerGroup{tab1}"], f"delete_{tab2.lower()}"),
-        _js=f"rows_{tab1.lower()}_{tab2.lower()}",
+        _js="function(){return rows('"+tab1.lower()+"_"+tab2.lower()+"')}",
         inputs=[elms[tab1][tab2]['selected']],
         outputs=[elms[tab1][tab2]['table']],
     )
 
-    elms[tab1][tab2]['select_all'].click(fn=js_only,_js=f"select_all_{tab1.lower()}_{tab2.lower()}")
-    elms[tab1][tab2]['deselect_all'].click(fn=js_only,_js=f"deselect_all_{tab1.lower()}_{tab2.lower()}")
+    elms[tab1][tab2]['select_all'].click(fn=js_only,_js="function(){return select_all('"+tab1.lower()+"_"+tab2.lower()+"', true)}")
+    elms[tab1][tab2]['deselect_all'].click(fn=js_only,_js="function(){return select_all('"+tab1.lower()+"_"+tab2.lower()+"', false)}")
 
 out_html = None
 def on_ui_tabs():
