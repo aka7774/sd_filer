@@ -26,15 +26,18 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 - 第三者がgradioを操作できる場合、環境を壊したりファイルを盗んだりできます
 - その他何があっても作者は責任を負いません
 
+## 仕様
+
+- WindowsではExtensionsのファイル操作でパーミッションエラーが出る
+- ファイル操作の結果が画面でなくコンソールに出力されます
+- 進捗がわかりにくい(Loading...が出てるか消えたかくらい)
+
 ## 細かいバグ
 
 gradioの知識が足りなくてうまく実装できてない
 
-- WindowsではExtensionsのファイル操作でパーミッションエラーが出る(直せません)
 - Reloadボタンなどがタイミングによってうまく動作しないことがあります(asyncの影響?)
 - ファイル操作をした後、選択したファイルの一覧とダウンロードするファイルの一覧が古いまま画面に残ります
-- ファイル操作の結果が画面でなくコンソールに出力されます
-- 進捗がわかりにくい(Loading...が出てるか消えたかくらい)
 - コードの一部に激しいコピペ部分があります(filer.js)
 
 ## UI機能は打ち止め
@@ -143,10 +146,6 @@ sha256ファイルは同時に処理されます。
 
 - 同名の.yamlファイルが存在すれば Y を表示
 
-## Genre列
-
-- モデルがどういう風に作られたかのメモ(任意)
-
 ## Comment列
 
 - メモ(任意)
@@ -170,10 +169,6 @@ sha256ファイルは同時に処理されます。
 - state_dictにファイルの詳細情報が格納されているのでそれを表示する
 - torch.load()しないといけなくて複数ファイルだと結構時間がかかる
 - エラーが出るファイルがあるけど原因は深追いしていない
-
-## model列
-
-- どのモデル用のファイルとして作ったかのメモを想定
 
 ## 解説
 
@@ -230,12 +225,7 @@ Windows だとダメかも
 
 ## 一覧に表示されるファイル
 
-- 既定の5つ
-  - config.json
-  - ui-config.json
-  - extensions/stable-diffusion-webui-images-browser/path_recorder.txt
-  - extensions/sdweb-merge-block-weighted-gui/csv/history.tsv
-  - extensions/sdweb-merge-block-weighted-gui/csv/preset.tsv
+- あらかじめ決められたいくつかのファイルのみ
 
 ## Load
 
