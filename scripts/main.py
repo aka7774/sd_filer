@@ -75,7 +75,6 @@ def ui_set(tab1, tab2):
         elms[tab1][tab2]['reload'] = gr.Button("Reload")
         elms[tab1][tab2]['select_all'] = gr.Button("Select All")
         elms[tab1][tab2]['deselect_all'] = gr.Button("Deselect All")
-        elms[tab1][tab2]['save'] = gr.Button("Save comments")
     with gr.Row():
         elms[tab1][tab2]['selected'] = gr.Textbox(
             elem_id=f"filer_{tab1.lower()}_{tab2.lower()}_selected",
@@ -97,13 +96,6 @@ def ui_set(tab1, tab2):
         elms[tab1][tab2]['table'] = gr.HTML("Please push Reload button.")
     with gr.Row():
         elms[tab1][tab2]['files'] = gr.Files(interactive=True)
-
-    elms[tab1][tab2]['save'].click(
-        fn=globals()[f"FilerGroup{tab1}"].save_comment,
-        _js=f"save_{tab1.lower()}_{tab2.lower()}",
-        inputs=[elms[tab1][tab2]['selected']],
-        outputs=[out_html],
-    )
 
     elms[tab1][tab2]['download'].click(
         fn=getattr(globals()[f"FilerGroup{tab1}"], f"download_{tab2.lower()}"),

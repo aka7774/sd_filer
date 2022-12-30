@@ -107,7 +107,7 @@ class FilerGroupHypernetworks(FilerGroupBase):
                     <td class="filer_state"><input onclick="state_{name}(this, '{r['title']}')" type="button" value="state" class="gr-button gr-button-lg gr-button-secondary"></td>
                     <td class="filer_hash">{r['hash']}</td>
                     <td class="filer_sha256">{r['sha256']}</td>
-                    <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+                    <td>{r['comment']}</td>
                 </tr>
                 """
 

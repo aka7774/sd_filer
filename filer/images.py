@@ -113,7 +113,7 @@ class FilerGroupImages(FilerGroupBase):
                     <td class="filer_filename">{r['filename']}</td>
                     <td class="filer_filepath">{r['filepath']}</td>
                     <td class="filer_files">{r['files']}</td>
-                    <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+                    <td>{r['comment']}</td>
                 </tr>
                 """
 

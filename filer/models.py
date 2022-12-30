@@ -63,15 +63,3 @@ def load_comment(name):
             if 'model' in data:
                 data['comment'] = f"{data['model']} {data['comment']}"
     return {}
-
-def save_comment(name, input):
-    p = pathlib.Path(__file__).parts[-4:-2]
-    filepath = os.path.join(p[0], p[1], 'json', f"{name}.json")
-    data = {}
-    if os.path.exists(filepath):
-        with open(filepath) as f:
-            data = json.load(f)
-    data.update(json.loads(input))
-    with open(filepath, "w") as f:
-        json.dump(data, f)
-    print("Done!")

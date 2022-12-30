@@ -132,7 +132,7 @@ class FilerGroupCheckpoints(FilerGroupBase):
                     <td class="filer_sha256">{r['sha256']}</td>
                     <td class="filer_vae">{r['vae']}</td>
                     <td class="filer_yaml">{r['yaml']}</td>
-                    <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+                    <td>{r['comment']}</td>
                 </tr>
                 """
 

@@ -58,7 +58,7 @@ class FilerGroupLoras(FilerGroupBase):
                     <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
                     <td class="filer_title">{r['title']}</td>
                     <td class="filer_sha256">{r['sha256']}</td>
-                    <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
+                    <td>{r['comment']}</td>
                 </tr>
                 """
 
