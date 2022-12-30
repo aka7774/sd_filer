@@ -1,5 +1,5 @@
 # sd_filer
-File Management of Models, Hypernetworks, Extensions, and Images.
+File Management of Models, Extensions, Files and Images.
 
 - Filer(フィレール)は、フランス語で「紡ぐ」という意味です
   - ただのファイラーです
@@ -41,8 +41,9 @@ File Management of Models, Hypernetworks, Extensions, and Images.
 
 gradioの知識が足りなくてうまく実装できてない
 
-- Reloadボタンなどがタイミングによってうまく動作しないことがあります(asyncの影響?)
 - ファイル操作をした後、選択したファイルの一覧とダウンロードするファイルの一覧が古いまま画面に残ります
+- checkpointsの一覧の下に謎の,がある
+- checkpoints, hypernetworksのActiveのSelect Allがチェックボックスと連動しなくなった気がする
 
 ## UI機能は打ち止め
 
