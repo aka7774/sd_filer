@@ -74,7 +74,7 @@ class FilerGroupHypernetworks(FilerGroupBase):
                 r['hash'] = sd_models.model_hash(r['filepath'])
                 r['sha256_path'] = r['filepath'] + '.sha256'
                 r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
-                r['model'] = d['model'] if 'model' in d else ''
+
                 r['comment'] = d['comment'] if 'comment' in d else ''
 
                 rs.append(r)
@@ -93,7 +93,6 @@ class FilerGroupHypernetworks(FilerGroupBase):
                     <th>state</th>
                     <th>hash</th>
                     <th>sha256</th>
-                    <th>Model</th>
                     <th>Comment</th>
                 </tr>
             </thead>
@@ -108,7 +107,6 @@ class FilerGroupHypernetworks(FilerGroupBase):
                     <td class="filer_state"><input onclick="state_{name}(this, '{r['title']}')" type="button" value="state" class="gr-button gr-button-lg gr-button-secondary"></td>
                     <td class="filer_hash">{r['hash']}</td>
                     <td class="filer_sha256">{r['sha256']}</td>
-                    <td><input class="filer_model" type="text" value="{r['model']}"></td>
                     <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
                 </tr>
                 """

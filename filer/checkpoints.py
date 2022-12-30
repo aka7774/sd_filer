@@ -39,7 +39,6 @@ class FilerGroupCheckpoints(FilerGroupBase):
                 r['vae'] = 'Y' if os.path.exists(r['vae_path']) else ''
                 r['yaml_path'] = os.path.splitext(r['filepath'])[0] + '.yaml'
                 r['yaml'] = 'Y' if os.path.exists(r['yaml_path']) else ''
-                r['genre'] = d['genre'] if 'genre' in d else ''
                 r['comment'] = d['comment'] if 'comment' in d else ''
 
                 rs.append(r)
@@ -118,7 +117,6 @@ class FilerGroupCheckpoints(FilerGroupBase):
                     <th>sha256</th>
                     <th>vae.pt</th>
                     <th>yaml</th>
-                    <th>Genre</th>
                     <th>Comment</th>
                 </tr>
             </thead>
@@ -126,13 +124,6 @@ class FilerGroupCheckpoints(FilerGroupBase):
         """
 
         for r in rs:
-            op_html = ''
-            for op in ['Default', 'Converted', 'Merged', 'MBW', 'MBW Each', 'Dreambooth', 'DreamArtist']:
-                if op == r['genre']:
-                    op_html += '<option selected>' + op
-                else:
-                    op_html += '<option>' + op
-
             code += f"""
                 <tr class="filer_{name}_row" data-title="{r['title']}">
                     <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
@@ -141,7 +132,6 @@ class FilerGroupCheckpoints(FilerGroupBase):
                     <td class="filer_sha256">{r['sha256']}</td>
                     <td class="filer_vae">{r['vae']}</td>
                     <td class="filer_yaml">{r['yaml']}</td>
-                    <td><select class="filer_genre">{op_html}</select></td>
                     <td><input class="filer_comment" type="text" value="{r['comment']}"></td>
                 </tr>
                 """

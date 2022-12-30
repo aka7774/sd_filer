@@ -1,29 +1,4 @@
-function save_checkpoints(name){
-    list = {}
-    gradioApp().querySelectorAll('.filer_'+name+'_row').forEach(function(row){
-		idx = row.querySelector('td .filer_genre').selectedIndex
-        list[row.dataset.title] = {
-            "genre": row.querySelector('td .filer_genre').options[idx].value,
-            "comment": row.querySelector('td .filer_comment').value
-        }
-    })
-
-    return JSON.stringify(list)
-}
-
-function save_hypernetworks(name){
-    list = {}
-    gradioApp().querySelectorAll('.filer_'+name+'_row').forEach(function(row){
-        list[row.dataset.title] = {
-            "model": row.querySelector('td .filer_model').value,
-            "comment": row.querySelector('td .filer_comment').value
-        }
-    })
-
-    return JSON.stringify(list)
-}
-
-function save_extensions(name){
+function save_comments(name){
     list = {}
     gradioApp().querySelectorAll('.filer_'+name+'_row').forEach(function(row){
         list[row.dataset.title] = {
@@ -32,18 +7,6 @@ function save_extensions(name){
     })
 
     return JSON.stringify(list)
-}
-
-function save_images(name){
-	return save_extensions(name)
-}
-
-function save_dreambooths(name){
-	return save_extensions(name)
-}
-
-function save_loras(name){
-	return save_extensions(name)
 }
 
 function reload_checkpoints(_, _){
@@ -130,11 +93,11 @@ function deselect_all_checkpoints_backup(_, _){
 }
 
 function save_checkpoints_active(_, _){
-	return save_checkpoints('checkpoints_active')
+	return save_comments('checkpoints_active')
 }
 
 function save_checkpoints_backup(_, _){
-	return save_checkpoints('checkpoints_backup')
+	return save_comments('checkpoints_backup')
 }
 // copy end
 
@@ -164,11 +127,11 @@ function deselect_all_hypernetworks_backup(_, _){
 }
 
 function save_hypernetworks_active(_, _){
-	return save_hypernetworks('hypernetworks_active')
+	return save_comments('hypernetworks_active')
 }
 
 function save_hypernetworks_backup(_, _){
-	return save_hypernetworks('hypernetworks_backup')
+	return save_comments('hypernetworks_backup')
 }
 //
 function rows_extensions_active(_, _){
@@ -196,11 +159,11 @@ function deselect_all_extensions_backup(_, _){
 }
 
 function save_extensions_active(_, _){
-	return save_extensions('extensions_active')
+	return save_comments('extensions_active')
 }
 
 function save_extensions_backup(_, _){
-	return save_extensions('extensions_backup')
+	return save_comments('extensions_backup')
 }
 //
 function rows_images_active(_, _){
@@ -228,11 +191,11 @@ function deselect_all_images_backup(_, _){
 }
 
 function save_images_active(_, _){
-	return save_images('images_active')
+	return save_comments('images_active')
 }
 
 function save_images_backup(_, _){
-	return save_images('images_backup')
+	return save_comments('images_backup')
 }
 //
 function rows_dreambooths_active(_, _){
@@ -260,11 +223,11 @@ function deselect_all_dreambooths_backup(_, _){
 }
 
 function save_dreambooths_active(_, _){
-	return save_dreambooths('dreambooths_active')
+	return save_comments('dreambooths_active')
 }
 
 function save_dreambooths_backup(_, _){
-	return save_dreambooths('dreambooths_backup')
+	return save_comments('dreambooths_backup')
 }
 //
 function rows_loras_active(_, _){
@@ -292,10 +255,10 @@ function deselect_all_loras_backup(_, _){
 }
 
 function save_loras_active(_, _){
-	return save_loras('loras_active')
+	return save_comments('loras_active')
 }
 
 function save_loras_backup(_, _){
-	return save_loras('loras_backup')
+	return save_comments('loras_backup')
 }
 // paste end

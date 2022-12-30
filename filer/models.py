@@ -56,7 +56,12 @@ def load_comment(name):
     filepath = os.path.join(p[0], p[1], 'json', f"{name}.json")
     if os.path.exists(filepath):
         with open(filepath) as f:
-            return json.load(f)
+            data = json.load(f)
+            # 廃止した項目はコメントに足す
+            if 'genre' in data:
+                data['comment'] = f"{data['genre']} {data['comment']}"
+            if 'model' in data:
+                data['comment'] = f"{data['model']} {data['comment']}"
     return {}
 
 def save_comment(name, input):
