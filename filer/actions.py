@@ -64,6 +64,11 @@ def copy(filenames, list, dst_dir):
                     shutil.copy(r['filepath'] + '.sha256', dst_path + '.sha256')
                 except:
                     pass
+            if (os.path.exists(os.path.splitext(r['filepath'])[0] + '.yaml')):
+                try:
+                    shutil.copy(os.path.splitext(r['filepath'])[0] + '.yaml', os.path.splitext(dst_path)[0] + '.yaml')
+                except:
+                    pass
     print("Copy Done!")
 
 def move(filenames, list, dst_dir):
@@ -88,6 +93,11 @@ def move(filenames, list, dst_dir):
                 shutil.move(r['filepath'] + '.sha256', dst_path + '.sha256')
             except:
                 pass
+            if (os.path.exists(os.path.splitext(r['filepath'])[0] + '.yaml')):
+                try:
+                    shutil.move(os.path.splitext(r['filepath'])[0] + '.yaml', os.path.splitext(dst_path)[0] + '.yaml')
+                except:
+                    pass
     print("Move Done!")
 
 def delete(filenames, list):
@@ -107,6 +117,11 @@ def delete(filenames, list):
             if (os.path.exists(r['filepath'] + '.sha256')):
                 try:
                     os.remove(r['filepath'] + '.sha256')
+                except:
+                    pass
+            if (os.path.exists(os.path.splitext(r['filepath'])[0] + '.yaml')):
+                try:
+                    os.remove(os.path.splitext(r['filepath'])[0] + '.yaml')
                 except:
                     pass
     print("Delete Done!")
