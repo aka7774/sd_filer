@@ -13,11 +13,16 @@ File Management of Models, Extensions, Files and Images.
 - Active-Backup間のCopy/Move/Delete
 - ファイルのUpload/Download
 - URLからActiveへの外部ファイルのダウンロード
-- ckptからsafetensorsへの変換
 - ファイルの完全なsha256の計算(.sha256ファイルへの保存)
 - InvokeAI用のModels.yamlファイルの作成
 - Hypernetworksのstate_dict情報の確認
 - 一部ファイルの編集
+
+## そのうち廃止予定
+
+- ckptからsafetensorsへの変換
+  - Checkpoint Mergerで同じモデル指定してM=0でWeighted sumしたら出来るはず
+  - float16への変換も出来るしckptへの逆変換も出来る
 
 # At your own risk
 
@@ -67,7 +72,7 @@ gradioの知識が足りなくてうまく実装できてない
 
 ## Activeタブ
 
-- 1111が認識しているファイルが表示されます
+- 1111で指定されたディレクトリ内のファイルが表示されます
 
 ## Backupタブ
 
@@ -103,7 +108,7 @@ gradioの知識が足りなくてうまく実装できてない
 
 ## Copy / Moveボタン
 
-sha256ファイルは同時に処理されます。
+.sha256ファイルと.yamlファイルは同時に処理されます。
 
 - Copy
   - ファイルは shutil.copy()
@@ -114,7 +119,7 @@ sha256ファイルは同時に処理されます。
 
 ## Deleteボタン
 
-sha256ファイルは同時に処理されます。
+.sha256ファイルと.yamlファイルは同時に処理されます。
 
 - ファイルは os.remove()
 - ディレクトリは shutil.rmtree()
@@ -151,10 +156,6 @@ sha256ファイルは同時に処理されます。
 - 1111の「Stable Diffusion checkpoint」ドロップダウンをいじる方法は現状存在しなさそう
   - BackupにMoveすれば当然リストからは消える
 - X/Y Plotの「Checkpoint」にはファイル名が有効で、「Selected」をコピペして使える
-  - 拡張子無しで動くが、safetensor対応に伴って拡張子はつけることにした
-- Copy/Move/Deleteに.vae.ptと.yamlを追随させる機能を検討したい気持ちはある
-  - チェックボックスでオンオフとか
-  - でもvaeは数が少ないしyamlは容量が小さいのでほっといてもいいかなー
 
 # Hypernetworks
 
@@ -225,7 +226,3 @@ Windows だとダメかも
 
 - 画面中段のテキストエリアに読み込む
 - 編集してSaveで保存できる
-
-## Download
-
-- 他と同じ
