@@ -27,9 +27,9 @@ def load_backup_dir(name):
     settings = load_settings()
 
     dir = ''
-    if settings['backup_'+name+'_dir']:
+    if 'backup_'+name+'_dir' in settings and settings['backup_'+name+'_dir']:
         dir = settings['backup_'+name+'_dir']
-    elif settings['backup_dir']:
+    elif 'backup_dir' in settings and settings['backup_dir']:
         dir = os.path.join(settings['backup_dir'], name)
 
     if dir and not os.path.exists(dir):
