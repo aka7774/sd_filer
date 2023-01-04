@@ -7,11 +7,12 @@ from modules import sd_models
 default_settings = {
     'backup_dir': '',
     'backup_checkpoints_dir': '',
+    'backup_embeddings_dir': '',
+    'backup_dreambooths_dir': '',
+    'backup_loras_dir': '',
     'backup_hypernetworks_dir': '',
     'backup_extensions_dir': '',
     'backup_images_dir': '',
-    'backup_dreambooths_dir': '',
-    'backup_loras_dir': '',
     }
 def load_settings():
     p = pathlib.Path(__file__).parts[-4:-2]

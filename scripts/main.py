@@ -8,11 +8,12 @@ from modules import script_callbacks, sd_models, shared
 import filer.models as filer_models
 import filer.actions as filer_actions
 from filer.checkpoints import FilerGroupCheckpoints
+from filer.embeddings import FilerGroupEmbeddings
+from filer.dreambooths import FilerGroupDreambooths
+from filer.loras import FilerGroupLoras
 from filer.hypernetworks import FilerGroupHypernetworks
 from filer.extensions import FilerGroupExtensions
 from filer.images import FilerGroupImages
-from filer.dreambooths import FilerGroupDreambooths
-from filer.loras import FilerGroupLoras
 from filer.files import FilerGroupFiles
 
 def js_only():
@@ -29,6 +30,7 @@ def save_settings(*input_settings):
     return [
         filer_models.save_settings(*input_settings),
         filer_models.load_backup_dir('checkpoints'),
+        filer_models.load_backup_dir('embeddings'),
         filer_models.load_backup_dir('dreambooths'),
         filer_models.load_backup_dir('loras'),
         filer_models.load_backup_dir('hypernetworks'),
@@ -195,6 +197,15 @@ def on_ui_tabs():
                         ui_set("Checkpoints", "Backup")
                     with gr.TabItem("Download"):
                         ui_set("Checkpoints", "Download")
+            with gr.TabItem("Embeddings"):
+                ui_dir("Embeddings")
+                with gr.Tabs() as tabs:
+                    with gr.TabItem("Active"):
+                        ui_set("Embeddings", "Active")
+                    with gr.TabItem("Backup"):
+                        ui_set("Embeddings", "Backup")
+                    with gr.TabItem("Download"):
+                        ui_set("Embeddings", "Download")
             with gr.TabItem("Dreambooths"):
                 ui_dir("Dreambooths")
                 with gr.Tabs() as tabs:
