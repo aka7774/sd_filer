@@ -19,7 +19,7 @@ class FilerGroupEmbeddings(FilerGroupBase):
         rs = []
         for filedir, subdirs, filenames in os.walk(dir):
             for filename in filenames:
-                if not filename.endswith('.pt'):
+                if not filename.endswith('.pt') and not filename.endswith('.png'):
                     continue
 
                 d = data[filename] if filename in data else {}
