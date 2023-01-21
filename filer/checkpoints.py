@@ -33,7 +33,7 @@ class FilerGroupCheckpoints(FilerGroupBase):
                 r['title'] = cls.get_rel_path(dir, r['filepath'])
                 r['hash'] = sd_models.model_hash(r['filepath'])
                 r['sha256_path'] = r['filepath'] + '.sha256'
-                r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
+                r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:10] if os.path.exists(r['sha256_path']) else ''
                 r['vae_path'] = os.path.splitext(r['filepath'])[0] + '.vae.pt'
                 r['vae'] = 'Y' if os.path.exists(r['vae_path']) else ''
                 r['yaml_path'] = os.path.splitext(r['filepath'])[0] + '.yaml'
@@ -65,22 +65,6 @@ class FilerGroupCheckpoints(FilerGroupBase):
                 y[r['filename']]['vae'] = r['vae_path']
 
         return yaml.dump(y)
-
-    @classmethod
-    def convert_safetensors(cls, filenames, list):
-        for r in list:
-            if r['title'] not in filenames.split(','):
-                continue
-            if not r['filename'].endswith('.ckpt'):
-                continue
-
-            dst_path = os.path.splitext(r['filepath'])[0] + '.safetensors'
-
-            with torch.no_grad():
-                weights = torch.load(r['filepath'])["state_dict"]
-                save_file(weights, dst_path)
-                print(f"{dst_path} saved.")
-        return "converted."
     
     @classmethod
     def make_active(cls, filenames):
@@ -93,16 +77,6 @@ class FilerGroupCheckpoints(FilerGroupBase):
         return html
 
     @classmethod
-    def convert_active(cls, filenames):
-        cls.convert_safetensors(filenames, cls.list_active())
-        return cls.table_active()
-
-    @classmethod
-    def convert_backup(cls, filenames):
-        cls.convert_safetensors(filenames, cls.list_backup())
-        return cls.table_backup()
-
-    @classmethod
     def _table(cls, tab2, rs):
         name = f"{cls.name}_{tab2}"
 
@@ -112,8 +86,8 @@ class FilerGroupCheckpoints(FilerGroupBase):
                 <tr>
                     <th></th>
                     <th>Filepath</th>
-                    <th>hash</th>
-                    <th>sha256</th>
+                    <th>shorthash</th>
+                    <th>OLD hash</th>
                     <th>vae.pt</th>
                     <th>yaml</th>
                     <th>Comment</th>
@@ -127,8 +101,8 @@ class FilerGroupCheckpoints(FilerGroupBase):
                 <tr class="filer_{name}_row" data-title="{r['title']}">
                     <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
                     <td class="filer_title">{r['title']}</td>
-                    <td class="filer_hash">{r['hash']}</td>
                     <td class="filer_sha256">{r['sha256']}</td>
+                    <td class="filer_hash">{r['hash']}</td>
                     <td class="filer_vae">{r['vae']}</td>
                     <td class="filer_yaml">{r['yaml']}</td>
                     <td>{r['comment']}</td>

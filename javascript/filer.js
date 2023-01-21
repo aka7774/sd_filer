@@ -3,10 +3,6 @@ function reload_checkpoints(_, _){
     gradioApp().querySelector('#refresh_sd_model_checkpoint').click()
 }
 
-function reload_hypernetworks(_, _){
-    gradioApp().querySelector('#refresh_sd_hypernetwork').click()
-}
-
 function state(button, name, title) {
     textarea = gradioApp().querySelector('#'+name+'_title textarea')
     textarea.value = title

@@ -29,7 +29,7 @@ class FilerGroupEmbeddings(FilerGroupBase):
                 r['filepath'] = os.path.join(filedir, filename)
                 r['title'] = cls.get_rel_path(dir, r['filepath'])
                 r['sha256_path'] = r['filepath'] + '.sha256'
-                r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
+                r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:10] if os.path.exists(r['sha256_path']) else ''
                 r['comment'] = d['comment'] if 'comment' in d else ''
 
                 rs.append(r)

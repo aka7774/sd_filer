@@ -87,7 +87,6 @@ def ui_set(tab1, tab2):
     with gr.Row():
         if tab1 == 'Checkpoints':
             elms[tab1][tab2]['invokeai'] = gr.Button("Make InvokeAI models.yaml")
-            elms[tab1][tab2]['safetensors'] = gr.Button("Convert to safetensors")
         if tab1 in ['Checkpoints', 'Hypernetworks', 'Loras']:
             elms[tab1][tab2]['calc_sha256'] = gr.Button("Calc SHA256")
         elms[tab1][tab2]['copy'] = gr.Button("Copy")
@@ -112,7 +111,7 @@ def ui_set(tab1, tab2):
         outputs=[elms[tab1][tab2]['table']],
     )
 
-    if tab1 in ['Checkpoints', 'Hypernetworks'] and tab2 == 'Active':
+    if tab1 in ['Checkpoints'] and tab2 == 'Active':
         elms[tab1][tab2]['reload'].click(
             fn=getattr(globals()[f"FilerGroup{tab1}"], f"reload_{tab2.lower()}"),
             _js=f"reload_{tab1.lower()}",
@@ -129,12 +128,6 @@ def ui_set(tab1, tab2):
     if tab1 == 'Checkpoints':
         elms[tab1][tab2]['invokeai'].click(
             fn=getattr(globals()[f"FilerGroup{tab1}"], f"make_{tab2.lower()}"),
-            _js="function(){return rows('"+tab1.lower()+"_"+tab2.lower()+"')}",
-            inputs=[elms[tab1][tab2]['selected']],
-            outputs=[elms[tab1][tab2]['table']],
-        )
-        elms[tab1][tab2]['safetensors'].click(
-            fn=getattr(globals()[f"FilerGroup{tab1}"], f"convert_{tab2.lower()}"),
             _js="function(){return rows('"+tab1.lower()+"_"+tab2.lower()+"')}",
             inputs=[elms[tab1][tab2]['selected']],
             outputs=[elms[tab1][tab2]['table']],

@@ -1,5 +1,6 @@
 import os
 import pathlib
+import html
 import yaml
 import torch
 import pprint
@@ -70,10 +71,11 @@ class FilerGroupHypernetworks(FilerGroupBase):
 
                 r['filename'] = filename
                 r['filepath'] = os.path.join(filedir, filename)
+                r['prompt'] = html.escape(f"<hypernet:{pathlib.Path(r['filepath']).stem}:1.0>")
                 r['title'] = cls.get_rel_path(dir, r['filepath'])
                 r['hash'] = sd_models.model_hash(r['filepath'])
                 r['sha256_path'] = r['filepath'] + '.sha256'
-                r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:16] if os.path.exists(r['sha256_path']) else ''
+                r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:10] if os.path.exists(r['sha256_path']) else ''
 
                 r['comment'] = d['comment'] if 'comment' in d else ''
 
@@ -90,6 +92,7 @@ class FilerGroupHypernetworks(FilerGroupBase):
                 <tr>
                     <th></th>
                     <th>Filepath</th>
+                    <th>Prompt</th>
                     <th>state</th>
                     <th>hash</th>
                     <th>sha256</th>
@@ -104,6 +107,7 @@ class FilerGroupHypernetworks(FilerGroupBase):
                 <tr class="filer_{name}_row" data-title="{r['title']}">
                     <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
                     <td class="filer_title">{r['title']}</td>
+                    <td class="filer_prompt">{r['prompt']}</td>
                     <td class="filer_state"><input onclick="state(this, '{name}', '{r['title']}')" type="button" value="state" class="gr-button gr-button-lg gr-button-secondary"></td>
                     <td class="filer_hash">{r['hash']}</td>
                     <td class="filer_sha256">{r['sha256']}</td>
