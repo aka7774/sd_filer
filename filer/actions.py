@@ -10,24 +10,19 @@ from . import images as filer_images
 
 from modules import hashes
 
-def calc_sha256(filenames, list):
-    for r in tqdm.tqdm(list):
-        if r['title'] not in filenames.split(','):
-            continue
-
+def calc_sha256(filenames, filelist):
+    for r in tqdm.tqdm(list(filter(lambda x: x['title'] in filenames.split(','), filelist))):
         r['sha256'] = hashes.calculate_sha256(r['filepath'])
         pathlib.Path(r['sha256_path']).write_text(r['sha256'], encoding="utf-8")
         print(f"{r['filepath']} sha256: {r['sha256']}")
     print("Done!")
 
-def copy(filenames, list, dst_dir):
+def copy(filenames, filelist, dst_dir):
     if not dst_dir:
         raise ValueError('Please Input Backup Directory')
         return
 
-    for r in tqdm.tqdm(list):
-        if r['title'] not in filenames.split(','):
-            continue
+    for r in tqdm.tqdm(list(filter(lambda x: x['title'] in filenames.split(','), filelist))):
 
         dst_path = os.path.join(dst_dir, r['filename'])
         
@@ -52,14 +47,12 @@ def copy(filenames, list, dst_dir):
                     pass
     print("Copy Done!")
 
-def move(filenames, list, dst_dir):
+def move(filenames, filelist, dst_dir):
     if not dst_dir:
         raise ValueError('Please Input Backup Directory')
         return
     
-    for r in tqdm.tqdm(list):
-        if r['title'] not in filenames.split(','):
-            continue
+    for r in tqdm.tqdm(list(filter(lambda x: x['title'] in filenames.split(','), filelist))):
 
         dst_path = os.path.join(dst_dir, r['filename'])
         
@@ -107,11 +100,9 @@ def delete(filenames, list):
                     pass
     print("Delete Done!")
 
-def download(filenames, list):
+def download(filenames, filelist):
     files = []
-    for r in tqdm.tqdm(list):
-        if r['title'] not in filenames.split(','):
-            continue
+    for r in tqdm.tqdm(list(filter(lambda x: x['title'] in filenames.split(','), filelist))):
 
         if os.path.isdir(r['filepath']):
             zip_path = shutil.make_archive(r['filename'], 'zip', root_dir=r['filepath'])
