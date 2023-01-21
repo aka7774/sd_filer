@@ -7,34 +7,14 @@ import requests
 from . import models as filer_models
 from . import images as filer_images
 
-def calc_hash(algo, filepath):
-    # ハッシュオブジェクトを作ります
-    h = hashlib.new(algo)
-
-    # 分割する長さをブロックサイズの整数倍に決めます
-    Length = hashlib.new(algo).block_size * 0x800
-
-    # 大きなバイナリデータを用意します
-    with open(filepath, 'rb') as f:
-        BinaryData = f.read(Length)
-
-        # データがなくなるまでループします
-        while BinaryData:
-            # ハッシュオブジェクトに追加して計算します。
-            h.update(BinaryData)
-
-            # データの続きを読み込む
-            BinaryData = f.read(Length)
-
-    # ハッシュオブジェクトを16進数で出力します
-    return h.hexdigest()
+from modules import hashes
 
 def calc_sha256(filenames, list):
     for r in list:
         if r['title'] not in filenames.split(','):
             continue
 
-        r['sha256'] = calc_hash('sha256', r['filepath'])
+        r['sha256'] = hashes.calculate_sha256(r['filepath'])
         pathlib.Path(r['sha256_path']).write_text(r['sha256'], encoding="utf-8")
         print(f"{r['filepath']} sha256: {r['sha256']}")
     print("Done!")

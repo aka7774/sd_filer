@@ -18,14 +18,11 @@ class FilerGroupCheckpoints(FilerGroupBase):
 
     @classmethod
     def _get_list(cls, dir):
-        data = filer_models.load_comment(cls.name)
         rs = []
         for filedir, subdirs, filenames in os.walk(dir):
             for filename in filenames:
                 if not filename.endswith('.ckpt') and not filename.endswith('.safetensors') and not filename.endswith('.vae.pt'):
                     continue
-
-                d = data[filename] if filename in data else {}
 
                 r = {}
                 r['filename'] = filename
@@ -38,7 +35,6 @@ class FilerGroupCheckpoints(FilerGroupBase):
                 r['vae'] = 'Y' if os.path.exists(r['vae_path']) else ''
                 r['yaml_path'] = os.path.splitext(r['filepath'])[0] + '.yaml'
                 r['yaml'] = 'Y' if os.path.exists(r['yaml_path']) else ''
-                r['comment'] = d['comment'] if 'comment' in d else ''
 
                 rs.append(r)
 
@@ -90,7 +86,6 @@ class FilerGroupCheckpoints(FilerGroupBase):
                     <th>OLD hash</th>
                     <th>vae.pt</th>
                     <th>yaml</th>
-                    <th>Comment</th>
                 </tr>
             </thead>
             <tbody>
@@ -105,7 +100,6 @@ class FilerGroupCheckpoints(FilerGroupBase):
                     <td class="filer_hash">{r['hash']}</td>
                     <td class="filer_vae">{r['vae']}</td>
                     <td class="filer_yaml">{r['yaml']}</td>
-                    <td>{r['comment']}</td>
                 </tr>
                 """
 

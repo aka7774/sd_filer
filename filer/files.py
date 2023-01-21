@@ -11,7 +11,9 @@ files = [
     'styles.csv',
     'webui-user.bat',
     'webui-user.sh',
+    os.path.join('extensions', 'sd_filer', 'config', 'macro.txt'),
     os.path.join('extensions', 'stable-diffusion-webui-images-browser', 'path_recorder.txt'),
+    os.path.join('extensions', 'sd_images_browser', 'path_recorder.txt'),
     os.path.join('extensions', 'sdweb-merge-block-weighted-gui', 'csv', 'history.tsv'),
     os.path.join('extensions', 'sdweb-merge-block-weighted-gui', 'csv', 'preset.tsv'),
     ]

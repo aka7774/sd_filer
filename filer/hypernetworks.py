@@ -57,8 +57,6 @@ class FilerGroupHypernetworks(FilerGroupBase):
 
     @classmethod
     def _get_list(cls, dir):
-        data = filer_models.load_comment(cls.name)
-    
         rs = []
         for filedir, subdirs, filenames in os.walk(dir):
             for filename in filenames:
@@ -67,8 +65,6 @@ class FilerGroupHypernetworks(FilerGroupBase):
 
                 r = {}
 
-                d = data[filename] if filename in data else {}
-
                 r['filename'] = filename
                 r['filepath'] = os.path.join(filedir, filename)
                 r['prompt'] = html.escape(f"<hypernet:{pathlib.Path(r['filepath']).stem}:1.0>")
@@ -76,8 +72,6 @@ class FilerGroupHypernetworks(FilerGroupBase):
                 r['hash'] = sd_models.model_hash(r['filepath'])
                 r['sha256_path'] = r['filepath'] + '.sha256'
                 r['sha256'] = pathlib.Path(r['sha256_path']).read_text()[:10] if os.path.exists(r['sha256_path']) else ''
-
-                r['comment'] = d['comment'] if 'comment' in d else ''
 
                 rs.append(r)
 
@@ -96,7 +90,6 @@ class FilerGroupHypernetworks(FilerGroupBase):
                     <th>state</th>
                     <th>hash</th>
                     <th>sha256</th>
-                    <th>Comment</th>
                 </tr>
             </thead>
             <tbody>
@@ -111,7 +104,6 @@ class FilerGroupHypernetworks(FilerGroupBase):
                     <td class="filer_state"><input onclick="state(this, '{name}', '{r['title']}')" type="button" value="state" class="gr-button gr-button-lg gr-button-secondary"></td>
                     <td class="filer_hash">{r['hash']}</td>
                     <td class="filer_sha256">{r['sha256']}</td>
-                    <td>{r['comment']}</td>
                 </tr>
                 """
 

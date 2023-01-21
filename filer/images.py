@@ -19,8 +19,6 @@ class FilerGroupImages(FilerGroupBase):
 
     @classmethod
     def _get_list(cls, dirs, parent_dir = ''):
-        data = filer_models.load_comment(cls.name)
-        
         for dir in dirs:
             for filedir, subdirs, filenames in os.walk(dir):
                 for subdir in subdirs:
@@ -37,13 +35,10 @@ class FilerGroupImages(FilerGroupBase):
 
             r = {}
 
-            d = data[filename] if filename in data else {}
-
             r['filename'] = filename
             r['filepath'] = filepath
             r['title'] = cls.get_rel_path(parent_dir, os.path.abspath(r['filepath']))
             r['files'] = sum(os.path.isfile(os.path.join(r['filepath'], name)) for name in os.listdir(r['filepath']))
-            r['comment'] = d['comment'] if 'comment' in d else ''
 
             rs.append(r)
 
@@ -104,7 +99,6 @@ class FilerGroupImages(FilerGroupBase):
                     <th></th>
                     <th>Filepath</th>
                     <th>files</th>
-                    <th>Comment</th>
                 </tr>
             </thead>
             <tbody>
@@ -116,7 +110,6 @@ class FilerGroupImages(FilerGroupBase):
                     <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
                     <td class="filer_title">{r['title']}</td>
                     <td class="filer_files">{r['files']}</td>
-                    <td>{r['comment']}</td>
                 </tr>
                 """
 

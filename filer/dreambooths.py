@@ -15,20 +15,16 @@ class FilerGroupDreambooths(FilerGroupBase):
 
     @classmethod
     def _get_list(cls, dir):
-        data = filer_models.load_comment(cls.name)
         rs = []
         for filename in os.listdir(dir):
             # ファイルは対象外
             if not os.path.isdir(os.path.join(dir, filename)):
                 continue
 
-            d = data[filename] if filename in data else {}
-
             r = {}
             r['title'] = filename
             r['filename'] = filename
             r['filepath'] = os.path.join(dir, filename)
-            r['comment'] = d['comment'] if 'comment' in d else ''
 
             rs.append(r)
 
@@ -43,7 +39,6 @@ class FilerGroupDreambooths(FilerGroupBase):
                 <tr>
                     <th></th>
                     <th>name</th>
-                    <th>Comment</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,7 +49,6 @@ class FilerGroupDreambooths(FilerGroupBase):
                 <tr class="filer_{name}_row" data-title="{r['title']}">
                     <td class="filer_checkbox"><input class="filer_{name}_select" type="checkbox" onClick="rows_{name}()"></td>
                     <td class="filer_filename">{r['filename']}</td>
-                    <td>{r['comment']}</td>
                 </tr>
                 """
 

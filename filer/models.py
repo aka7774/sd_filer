@@ -16,7 +16,7 @@ default_settings = {
     }
 def load_settings():
     p = pathlib.Path(__file__).parts[-4:-2]
-    filepath = os.path.join(p[0], p[1], 'json', 'config.json')
+    filepath = os.path.join(p[0], p[1], 'config', 'config.json')
     settings = default_settings
     if os.path.exists(filepath):
         with open(filepath) as f:
@@ -39,7 +39,7 @@ def load_backup_dir(name):
 
 def save_settings(*input_settings):
     p = pathlib.Path(__file__).parts[-4:-2]
-    filepath = os.path.join(p[0], p[1], 'json', 'config.json')
+    filepath = os.path.join(p[0], p[1], 'config', 'config.json')
     data = {}
     if os.path.exists(filepath):
         with open(filepath) as f:
@@ -48,19 +48,8 @@ def save_settings(*input_settings):
     for k in default_settings.keys():
         data.update({k: input_settings[i]})
         i += 1
+    if not os.path.exists(os.path.dirname(filepath)):
+        os.makedirs(os.path.dirname(filepath))
     with open(filepath, "w") as f:
         json.dump(data, f)
     return json.dumps(data)
-
-def load_comment(name):
-    p = pathlib.Path(__file__).parts[-4:-2]
-    filepath = os.path.join(p[0], p[1], 'json', f"{name}.json")
-    if os.path.exists(filepath):
-        with open(filepath) as f:
-            data = json.load(f)
-            # 廃止した項目はコメントに足す
-            if 'genre' in data:
-                data['comment'] = f"{data['genre']} {data['comment']}"
-            if 'model' in data:
-                data['comment'] = f"{data['model']} {data['comment']}"
-    return {}
