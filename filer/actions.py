@@ -3,6 +3,7 @@ import shutil
 import pathlib
 import hashlib
 import requests
+import tqdm
 
 from . import models as filer_models
 from . import images as filer_images
@@ -10,7 +11,7 @@ from . import images as filer_images
 from modules import hashes
 
 def calc_sha256(filenames, list):
-    for r in list:
+    for r in tqdm.tqdm(list):
         if r['title'] not in filenames.split(','):
             continue
 
@@ -24,7 +25,7 @@ def copy(filenames, list, dst_dir):
         raise ValueError('Please Input Backup Directory')
         return
 
-    for r in list:
+    for r in tqdm.tqdm(list):
         if r['title'] not in filenames.split(','):
             continue
 
@@ -56,7 +57,7 @@ def move(filenames, list, dst_dir):
         raise ValueError('Please Input Backup Directory')
         return
     
-    for r in list:
+    for r in tqdm.tqdm(list):
         if r['title'] not in filenames.split(','):
             continue
 
@@ -108,7 +109,7 @@ def delete(filenames, list):
 
 def download(filenames, list):
     files = []
-    for r in list:
+    for r in tqdm.tqdm(list):
         if r['title'] not in filenames.split(','):
             continue
 
@@ -122,7 +123,7 @@ def download(filenames, list):
 
 def upload(files, dir, is_zip = False):
     # アップロードされたファイルはtmpに存在する
-    for file in files:
+    for file in tqdm.tqdm(files):
         tmp_stem, ext = os.path.splitext(os.path.basename(file.name))
         
         # zipモードの時は展開する
@@ -151,7 +152,7 @@ def upload(files, dir, is_zip = False):
     print("Upload Done!")
 
 def urls(urls, dst_dir):
-    for url in urls.split("\n"):
+    for url in tqdm.tqdm(urls.split("\n")):
         url = url.rstrip("\r")
         filename = os.path.basename(url)
         dst_path = os.path.join(dst_dir, filename)
