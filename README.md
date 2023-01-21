@@ -27,14 +27,12 @@ File Management of Models, Extensions, Files and Images.
 
 ## 変更点
 
-- コメント機能は廃止します(pathで管理するのがおすすめ)
-  - しばらくは表示だけのこしておく
+- コメント機能は廃止しました(pathで管理するのがおすすめ)
+- make safetensorsは廃止しました(stable-diffusion-webui-model-toolkitがおすすめ)
 
 ## 仕様
 
 - WindowsではExtensionsのファイル操作でパーミッションエラーが出る
-- ファイル操作の結果が画面でなくコンソールに出力されます
-- 進捗がわかりにくい(Loading...が出てるか消えたかくらい)
 
 ## 細かいバグ
 
@@ -43,10 +41,6 @@ gradioの知識が足りなくてうまく実装できてない
 - ファイル操作をした後、選択したファイルの一覧とダウンロードするファイルの一覧が古いまま画面に残ります
 - checkpointsの一覧の下に謎の,がある
 - checkpoints, hypernetworksのActiveのSelect Allがチェックボックスと連動しなくなった気がする
-
-## UI機能は打ち止め
-
-- gradioでUIを作りこむのは非常に困難だとわかったのでUIはこれ以上凝らない
 
 # 共通
 
@@ -59,10 +53,9 @@ gradioの知識が足りなくてうまく実装できてない
 - タブごとに別のディレクトリを指定することもできます
 - ディレクトリが存在しない場合、自動的に作成されます
 
-## Extension内のjsonフォルダ
+## Extension内のconfigフォルダ
 
 - Settingsの内容が保存されます
-- Commentsが保存されます
 
 ## Activeタブ
 
@@ -147,8 +140,6 @@ gradioの知識が足りなくてうまく実装できてない
 
 - 実装はCheckpoint Managerを参考にした
   - https://github.com/rvhfxb/checkpoint_manager
-- 1111の「Stable Diffusion checkpoint」ドロップダウンをいじる方法は現状存在しなさそう
-  - BackupにMoveすれば当然リストからは消える
 - X/Y Plotの「Checkpoint」にはファイル名が有効で、「Selected」をコピペして使える
 
 # Hypernetworks
@@ -185,7 +176,8 @@ Windows だとダメかも
 # Images
 
 - ディレクトリ単位
-- ファイル単位の処理には Image Browser を使いましょう
+- ファイル単位の処理には Images Browser を使いましょう
+  - https://github.com/aka7774/sd_images_browser
 
 ## 一覧に表示されるディレクトリ
 
@@ -196,9 +188,6 @@ Windows だとダメかも
   - opts.outdir_txt2img_grids
   - opts.outdir_img2img_grids
   - opts.outdir_save
-- generate_from_jsonの2つ(インストールディレクトリを変更していない場合のみ)
-  - json
-  - webp
 - Image Browser の Others タブで追加したディレクトリ
   - path_recorder.txtに保存されている
 
