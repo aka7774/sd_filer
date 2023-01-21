@@ -18,12 +18,6 @@ File Management of Models, Extensions, Files and Images.
 - Hypernetworksのstate_dict情報の確認
 - 一部ファイルの編集
 
-## そのうち廃止予定
-
-- ckptからsafetensorsへの変換
-  - Checkpoint Mergerで同じモデル指定してM=0でWeighted sumしたら出来るはず
-  - float16への変換も出来るしckptへの逆変換も出来る
-
 # At your own risk
 
 - Deleteボタンを押すと選択したファイルが消えます
