@@ -46,7 +46,8 @@ elms = {}
 def ui_system():
     with gr.Row():
         about_basic = gr.Button("Basic")
-        about_detail = gr.Button("Detail")
+        about_hashes = gr.Button("Hashes")
+        about_pip_list = gr.Button("pip list")
     with gr.Row():
         about_text = gr.Textbox(label="System Information",lines=20,Interactive=False)
 
@@ -54,8 +55,12 @@ def ui_system():
         fn=about_system.print_about_basic,
         outputs=[about_text],
     )
-    about_detail.click(
-        fn=about_system.print_about_detail,
+    about_hashes.click(
+        fn=about_system.print_hashes,
+        outputs=[about_text],
+    )
+    about_pip_list.click(
+        fn=about_system.print_pip_list,
         outputs=[about_text],
     )
 

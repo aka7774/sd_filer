@@ -13,8 +13,14 @@ else:
 
 import gradio as gr
 
+import launch
 from launch import run
 from modules import script_callbacks, sd_models, shared, extensions
+
+def print_pip_list():
+    rs = []
+    rs.append(launch.run(f"{sys.executable} -m pip list"))
+    return "\n".join(rs)
 
 def print_about_basic():
     rs = []
@@ -34,39 +40,6 @@ def print_about_basic():
         rs.append(f"GPU {torch.cuda.get_device_name()}, VRAM: {gib(total)} GiB")
     except:
         rs.append(f"GPU: unknown")
-
-    rs.append(f'argv: {" ".join(sys.argv[1:])}')
-
-    try:
-        git = os.environ.get('GIT', "git")
-        commithash = run(f"{git} rev-parse HEAD").strip()
-        rs.append('stable-diffusion-webui: ' + commithash)
-    except:
-        pass
-
-    checks = ["bitsandbytes", "diffusers", "transformers", "xformers", "torch", "torchvision"]
-    for check in checks:
-        check_ver = "N/A"
-        try:
-            check_available = importlib.util.find_spec(check) is not None
-            if check_available:
-                check_ver = importlib_metadata.version(check)
-        except importlib_metadata.PackageNotFoundError:
-            check_available = False
-        if check_available:
-            rs.append(f"{check}: {check_ver}")
-        else:
-            rs.append(f"{check}: NOT installed.")
-
-    return "\n".join(rs)
-
-def print_about_detail():
-    rs = []
-
-    try:
-        rs.append(f"Reported at {datetime.datetime.now()} by github.com/aka7774/sd_filer")
-    except:
-        rs.append(f"Reported by github.com/aka7774/sd_filer")
 
     try:
         rs.append(f"{platform.system()} ({platform.platform()})")
@@ -98,12 +71,41 @@ def print_about_detail():
 
     rs.append('')
 
+    rs.append(f'argv: {" ".join(sys.argv[1:])}')
+
+
+    return "\n".join(rs)
+
+def print_hashes():
+    rs = []
+
+    checks = ["bitsandbytes", "diffusers", "transformers", "xformers", "torch", "torchvision"]
+    for check in checks:
+        check_ver = "N/A"
+        try:
+            check_available = importlib.util.find_spec(check) is not None
+            if check_available:
+                check_ver = importlib_metadata.version(check)
+        except importlib_metadata.PackageNotFoundError:
+            check_available = False
+        if check_available:
+            rs.append(f"{check}: {check_ver}")
+        else:
+            rs.append(f"{check}: NOT installed.")
+
+    try:
+        git = os.environ.get('GIT', "git")
+        commithash = launch.run(f"{git} rev-parse HEAD").strip()
+        rs.append('stable-diffusion-webui: ' + commithash)
+    except:
+        pass
+
     try:
         git = os.environ.get('GIT', "git")
         for ext in extensions.extensions:
             if ext.is_builtin or not ext.enabled:
                 continue
-            commithash = run(f"{git} -C {os.path.abspath(ext.path)} rev-parse HEAD").strip()
+            commithash = launch.run(f"{git} -C {os.path.abspath(ext.path)} rev-parse HEAD").strip()
             rs.append(f"{ext.name}: {commithash}")
     except:
         rs.append('Extensions: unknown')
