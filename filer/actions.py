@@ -152,6 +152,15 @@ def urls(urls, dst_dir):
         print(f"Downloading {url}")
         res = requests.get(url, stream=True)
         if res.status_code == 200:
+            try:
+                contentType = res.headers['Content-Type']
+                contentDisposition = res.headers['Content-Disposition']
+                ATTRIBUTE = 'filename='
+                fileName = contentDisposition[contentDisposition.find(ATTRIBUTE) + len(ATTRIBUTE):].strip('"')
+                dst_path = os.path.join(dst_dir, fileName)
+                print(f"save to {fileName}")
+            except:
+                pass
             size = res.headers.get('content-length', -1)
             print(f"Content-Length: {size}")
             with open(dst_path, 'wb') as f:
@@ -160,3 +169,5 @@ def urls(urls, dst_dir):
                         f.write(chunk)
                         f.flush()
                 print(f"Done.")
+        else:
+            print(f"Failed. Status: {res.status_code} URL: {url}")
