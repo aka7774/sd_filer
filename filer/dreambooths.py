@@ -1,7 +1,7 @@
 import os
 import pathlib
 
-from modules import sd_models
+from modules import sd_models, shared
 from .base import FilerGroupBase
 from . import models as filer_models
 
@@ -11,7 +11,15 @@ class FilerGroupDreambooths(FilerGroupBase):
 
     @classmethod
     def get_active_dir(cls):
-        return os.path.abspath("models/dreambooth")
+        models_path = None
+        try:
+            models_path = shared.cmd_opts.dreambooth_models_path
+        except:
+            pass
+        if models_path == "" or models_path is None:
+            models_path = os.path.join(shared.models_path, "dreambooth")
+
+        return os.path.abspath(models_path)
 
     @classmethod
     def _get_list(cls, dir):

@@ -1,7 +1,7 @@
 import os
 import pathlib
 
-from modules import sd_models
+from modules import sd_models, shared
 from .base import FilerGroupBase
 from . import models as filer_models
 from . import actions as filer_actions
@@ -11,7 +11,7 @@ class FilerGroupLoras(FilerGroupBase):
 
     @classmethod
     def get_active_dir(cls):
-        return os.path.abspath("models/lora")
+        return os.path.abspath(shared.cmd_opts.lora_dir)
 
     @classmethod
     def _get_list(cls, dir):
