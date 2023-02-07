@@ -156,7 +156,7 @@ def urls(urls, dst_dir):
                 contentType = res.headers['Content-Type']
                 contentDisposition = res.headers['Content-Disposition']
                 ATTRIBUTE = 'filename='
-                fileName = contentDisposition[contentDisposition.find(ATTRIBUTE) + len(ATTRIBUTE):].strip('"')
+                fileName = contentDisposition[contentDisposition.find(ATTRIBUTE) + len(ATTRIBUTE):].strip(';"')
                 dst_path = os.path.join(dst_dir, fileName)
                 print(f"save to {fileName}")
             except:
