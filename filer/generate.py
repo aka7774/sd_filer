@@ -21,8 +21,8 @@ from modules import sd_samplers, sd_models, shared, sd_vae
 from modules.processing import Processed, process_images
 from modules.shared import opts, cmd_opts, state
 from modules.hypernetworks import hypernetwork
-from . import models as infotexts_models
-from . import actions as infotexts_actions
+from . import imodels as infotexts_models
+from . import iactions as infotexts_actions
 from . import sha256
 
 # Hypernetをnameから引けるように準備しておく
