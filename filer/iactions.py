@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageFont
 from modules import shared
 from modules.shared import opts, cmd_opts, state
 
-from . import models as infotexts_models
+from . import imodels as infotexts_models
 
 default_dirs = {
     "PNG to TXT": ['png', 'txt'],
@@ -360,27 +360,29 @@ def macros_run(macros, data):
             del data[key]
 
     for macro in macros:
-        if (macro[0] == 'Prompt'):
+        if len(macro) < 4:
+            continue
+        if macro[0] == 'Prompt':
             key = 'prompt'
-        elif (macro[0] == 'Negative Prompt'):
+        elif macro[0] == 'Negative Prompt':
             key = 'negative_prompt'
-        elif (macro[0] == 'Key'):
+        elif macro[0] == 'Key':
             key = macro[2].lower()
 
         if not key in data:
             print(f"data not in: {key}")
             continue
 
-        if (macro[1] == 'Add First'):
+        if macro[1] == 'Add First':
             data[key] = macro[3] + data[key]
-        elif (macro[1] == 'Add Last'):
+        elif macro[1] == 'Add Last':
             data[key] += macro[3]
-        elif (macro[1] == 'Replace'):
-            data[key] = data[key].replace(macro[2], macro[3])
-        elif (macro[1] == 're.sub'):
+        elif macro[1] == 'Replace':
+            data[key] = str(data[key]).replace(macro[2], macro[3])
+        elif macro[1] == 're.sub':
             pattern = re.compile(macro[2])
-            data[key] = pattern.sub(macro[3], data[key])
-        elif (macro[1] == 'Overwrite'):
+            data[key] = pattern.sub(macro[3], str(data[key]))
+        elif macro[1] == 'Overwrite':
             data[key] = macro[3]
             
     return data

@@ -172,19 +172,23 @@ def get_ignore_keys():
     return []
 
 def txt_to_dict(filepath, is_array = False):
-    import modules.generation_parameters_copypaste as parameters_copypaste
     with open(filepath, 'r', encoding="utf-8") as f:
         text = f.read()
-    params = parameters_copypaste.parse_generation_parameters(text)
+    try:
+        import modules.generation_parameters_copypaste as parameters_copypaste
+        params = parameters_copypaste.parse_generation_parameters(text)
+    except:
+        print(text)
+        raise ValueError("edit_txt Syntax error")
 
     res = {}
     for k, v in params.items():
-        k = k.replace(' ', '_')
-        if k == 'Size-1':
-            k = 'Width'
-        elif k == 'Size-2':
-            k = 'Height'
-        if is_array and k not in ['Prompt', 'Negative_Prompt']:
+        k = k.lower().replace(' ', '_')
+        if k == 'size-1':
+            k = 'width'
+        elif k == 'size-2':
+            k = 'height'
+        if is_array and k not in ['prompt', 'negative_prompt']:
             res[k] = [v]
         else:
             res[k] = v
@@ -193,18 +197,21 @@ def txt_to_dict(filepath, is_array = False):
 def dict_to_text(job):
     text = ''
 
-    if 'Prompt' in job:
-        text += job['Prompt'] + "\n"
-        del job['Prompt']
-    if 'Megative_Prompt' in job:
-        text += job['Megative_Prompt'] + "\n"
-        del job['Megative_Prompt']
-    if 'Steps' in job:
-        text += f"Steps: {job['Steps']}, "
-        del job['Steps']
+    if 'prompt' in job:
+        text += job['prompt'] + "\n"
+        del job['prompt']
+    if 'negative_prompt' in job:
+        text += job['negative_prompt'] + "\n"
+        del job['negative_prompt']
+    if 'steps' in job:
+        text += f"steps: {job['steps']}, "
+        del job['steps']
 
     pairs = []
     for k, v in job.items():
+        k = k.lower()
+        if k in ['prompt', 'negative_prompt']:
+            continue
         pairs.append(f"{k}: {v}")
     text += f"{', '.join(pairs)}\n"
 
