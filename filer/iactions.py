@@ -362,6 +362,7 @@ def macros_run(macros, data):
     for macro in macros:
         if len(macro) < 4:
             continue
+
         if macro[0] == 'Prompt':
             key = 'prompt'
         elif macro[0] == 'Negative Prompt':
@@ -383,7 +384,9 @@ def macros_run(macros, data):
             pattern = re.compile(macro[2])
             data[key] = pattern.sub(macro[3], str(data[key]))
         elif macro[1] == 'Overwrite':
-            data[key] = macro[3]
+            data[key] = str(macro[3])
+        elif macro[1] == 'Delete':
+            del(data[key])
             
     return data
 

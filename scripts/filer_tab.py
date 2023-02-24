@@ -82,7 +82,7 @@ def ui_infotexts():
             with gr.Row():
                 macro_target = gr.Radio(choices=["Prompt", "Negative Prompt", "Params"], value="Prompt", label="Target", interactive=True)
             with gr.Row():
-                macro_action = gr.Radio(choices=["Add First", "Add Last", "Replace", "re.sub", "Overwrite"], value="Add First", label="Action", interactive=True)
+                macro_action = gr.Radio(choices=["Add First", "Add Last", "Replace", "re.sub", "Overwrite", "Delete"], value="Add First", label="Action", interactive=True)
             with gr.Row():
                 macro_1 = gr.Textbox(label='Key/Replace Search/regex')
             with gr.Row():
