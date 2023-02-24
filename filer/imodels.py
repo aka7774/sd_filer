@@ -199,18 +199,15 @@ def dict_to_text(job):
 
     if 'prompt' in job:
         text += job['prompt'] + "\n"
-        del job['prompt']
     if 'negative_prompt' in job:
-        text += job['negative_prompt'] + "\n"
-        del job['negative_prompt']
+        text += 'Negative_Prompt: ' + job['negative_prompt'] + "\n"
     if 'steps' in job:
         text += f"steps: {job['steps']}, "
-        del job['steps']
 
     pairs = []
     for k, v in job.items():
         k = k.lower()
-        if k in ['prompt', 'negative_prompt']:
+        if k in ['prompt', 'negative_prompt', 'steps']:
             continue
         pairs.append(f"{k}: {v}")
     text += f"{', '.join(pairs)}\n"
