@@ -200,7 +200,7 @@ def dict_to_text(job):
     if 'prompt' in job:
         text += job['prompt'] + "\n"
     if 'negative_prompt' in job:
-        text += 'Negative_Prompt: ' + job['negative_prompt'] + "\n"
+        text += 'Negative prompt: ' + job['negative_prompt'] + "\n"
     if 'steps' in job:
         text += f"steps: {job['steps']}, "
 
